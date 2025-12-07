@@ -1,4 +1,4 @@
-'use client'; // V4.3 Lite - Bundle AI Edition
+'use client';
 import React, { useState, useCallback, useMemo } from 'react';
 
 // Comprehensive icon system
@@ -699,7 +699,7 @@ Return ONLY the JSON array starting with [ and ending with ].`
                 onClick={() => pw === ADMIN_PASSWORD ? setAuth(true) : notify('Invalid password', 'err')}
                 className="w-full py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white font-bold rounded-xl text-lg"
               >
-                Access V4.0 Powerhouse
+                Access V4.3 Lite
               </button>
             </div>
           </div>
