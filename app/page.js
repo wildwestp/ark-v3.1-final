@@ -1,4 +1,4 @@
-'use client';
+'use client'; // V4.3 Lite - Bundle AI Edition
 import React, { useState, useCallback, useMemo } from 'react';
 
 // Comprehensive icon system
