@@ -94,6 +94,10 @@ export default function ArkBundleHubV4() {
     topCategory: ''
   });
   
+  // V4.3 Phase 2 Lite Features
+  const [bundleSuggestions, setBundleSuggestions] = useState([]);
+  const [showBundleAI, setShowBundleAI] = useState(false);
+  
   // Calculator state
   const [calc, setCalc] = useState({
     cost: 10,
@@ -613,6 +617,55 @@ Return ONLY the JSON array starting with [ and ending with ].`
     notify('Debug logs exported!');
   }, [debugLogs, notify]);
 
+  // ========== V4.3 PHASE 2 LITE FEATURES ==========
+  
+  // Simple Bundle AI - finds complementary products
+  const suggestBundles = useCallback(() => {
+    if (products.length < 2) {
+      notify('Need at least 2 products to suggest bundles!', 'err');
+      return;
+    }
+    
+    const suggestions = [];
+    
+    // Simple algorithm: match by category and price range
+    for (let i = 0; i < products.length && suggestions.length < 5; i++) {
+      for (let j = i + 1; j < products.length && suggestions.length < 5; j++) {
+        const p1 = products[i];
+        const p2 = products[j];
+        
+        // Check if compatible
+        const sameCat = p1.category === p2.category;
+        const priceMatch = Math.abs((p1.price?.sell || 0) - (p2.price?.sell || 0)) < 15;
+        const validation1 = getValidationScore(p1);
+        const validation2 = getValidationScore(p2);
+        const bothGood = validation1.score >= 60 && validation2.score >= 60;
+        
+        if (sameCat && priceMatch && bothGood) {
+          const bundleCost = (p1.price?.cost || 0) + (p2.price?.cost || 0);
+          const bundlePrice = ((p1.price?.sell || 0) + (p2.price?.sell || 0)) * 0.85;
+          const profit = bundlePrice - bundleCost;
+          const margin = ((profit / bundlePrice) * 100).toFixed(1);
+          
+          suggestions.push({
+            id: `bundle-${i}-${j}`,
+            products: [p1, p2],
+            bundleCost: bundleCost.toFixed(2),
+            bundlePrice: bundlePrice.toFixed(2),
+            profit: profit.toFixed(2),
+            margin,
+            score: Math.min(validation1.score, validation2.score)
+          });
+        }
+      }
+    }
+    
+    setBundleSuggestions(suggestions);
+    setShowBundleAI(true);
+    addDebugLog('success', 'Bundle AI generated suggestions', { count: suggestions.length });
+    notify(`Found ${suggestions.length} bundle opportunities!`);
+  }, [products, notify, addDebugLog]);
+
   // Login screen
   if (!auth) {
     return (
@@ -623,7 +676,7 @@ Return ONLY the JSON array starting with [ and ending with ].`
               <Icon name="brain" size={48} className="text-white" />
             </div>
             <h1 className="text-4xl font-black text-white mb-2">Ark Bundle Hub</h1>
-            <p className="text-purple-300 font-bold">V4.0 Ultimate Powerhouse</p>
+            <p className="text-purple-300 font-bold">V4.3 Lite - Bundle AI Edition</p>
             <p className="text-purple-400 text-sm mt-2">🇦🇺 AU Retail • AI Predictions • Advanced Analytics</p>
           </div>
           <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/20">
@@ -749,7 +802,7 @@ Return ONLY the JSON array starting with [ and ending with ].`
                 <Icon name="brain" size={28} /> ARK
               </div>
               <div>
-                <p className="font-bold text-lg">Ultimate Powerhouse</p>
+                <p className="font-bold text-lg">V4.3 Lite Edition</p>
                 <p className="text-sm text-purple-300">🇦🇺 AU Retail • AI Predictions • v4.0</p>
               </div>
             </div>
@@ -837,6 +890,28 @@ Return ONLY the JSON array starting with [ and ending with ].`
                 ))}
               </div>
             </div>
+
+            {/* V4.3 Bundle AI Button */}
+            {products.length >= 2 && (
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-4 shadow-lg mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Icon name="brain" size={32} className="text-white" />
+                    <div>
+                      <h3 className="text-white font-bold text-lg">Bundle AI Suggester</h3>
+                      <p className="text-purple-100 text-sm">Find profitable 2-pack combinations</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={suggestBundles}
+                    className="px-6 py-3 bg-white text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-all flex items-center gap-2"
+                  >
+                    <Icon name="sparkles" size={20} />
+                    Suggest Bundles
+                  </button>
+                </div>
+              </div>
+            )}
 
             {error && (
               <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 text-red-700">
@@ -1593,6 +1668,99 @@ Return ONLY the JSON array starting with [ and ending with ].`
           </div>
         )}
       </main>
+
+      {/* V4.3 Bundle AI Modal */}
+      {showBundleAI && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <Icon name="brain" size={36} className="text-white" />
+                  <div>
+                    <h2 className="text-2xl font-black text-white">Bundle AI Suggestions</h2>
+                    <p className="text-purple-100">Profitable 2-pack combinations</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowBundleAI(false)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <Icon name="x" size={24} className="text-white" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              {bundleSuggestions.length === 0 ? (
+                <div className="text-center py-12">
+                  <Icon name="alert" size={48} className="mx-auto text-slate-300 mb-4" />
+                  <p className="text-slate-500">No bundle suggestions found. Try products in the same category with similar prices!</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {bundleSuggestions.map((bundle, idx) => (
+                    <div key={bundle.id} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-5 border-2 border-purple-200">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-lg font-bold text-purple-900">Bundle #{idx + 1}</h3>
+                          <p className="text-sm text-purple-600">Score: {bundle.score}/100</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-black text-green-600">${bundle.profit}</div>
+                          <div className="text-xs text-green-700">Profit ({bundle.margin}% margin)</div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        {bundle.products.map((p, pidx) => (
+                          <div key={pidx} className="bg-white rounded-xl p-3 border border-purple-200">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-2xl">{p.emoji}</span>
+                              <div className="flex-1">
+                                <h4 className="font-bold text-sm text-slate-800">{p.name}</h4>
+                                <p className="text-xs text-slate-500">{p.category}</p>
+                              </div>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-slate-600">Cost: ${p.price?.cost}</span>
+                              <span className="text-green-600">Sell: ${p.price?.sell}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                        <div className="bg-white rounded-lg p-2">
+                          <div className="text-xs text-slate-500">Bundle Cost</div>
+                          <div className="font-bold text-red-600">${bundle.bundleCost}</div>
+                        </div>
+                        <div className="bg-white rounded-lg p-2">
+                          <div className="text-xs text-slate-500">Bundle Price</div>
+                          <div className="font-bold text-blue-600">${bundle.bundlePrice}</div>
+                        </div>
+                        <div className="bg-white rounded-lg p-2">
+                          <div className="text-xs text-slate-500">Margin</div>
+                          <div className="font-bold text-green-600">{bundle.margin}%</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="border-t p-4 bg-slate-50">
+              <button
+                onClick={() => setShowBundleAI(false)}
+                className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
