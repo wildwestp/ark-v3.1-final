@@ -60,7 +60,7 @@ const Icon = ({ name, size = 24, className = "" }) => {
   );
 };
 
-export default function ArkBundleHubV4Phase2() {
+export default function ArkBundleHubV4() {
   const ADMIN_PASSWORD = 'Ark2024Global!';
   
   // Auth state
@@ -83,7 +83,7 @@ export default function ArkBundleHubV4Phase2() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expanded, setExpanded] = useState(null);
   
-  // V4.0 Phase 1 Features
+  // V4.0 Phase 1 New Features
   const [showDebug, setShowDebug] = useState(false);
   const [debugLogs, setDebugLogs] = useState([]);
   const [showRetailStock, setShowRetailStock] = useState(true);
@@ -93,14 +93,6 @@ export default function ArkBundleHubV4Phase2() {
     avgValidationScore: 0,
     topCategory: ''
   });
-  
-  // V4.0 Phase 2 NEW Features
-  const [bundleSuggestions, setBundleSuggestions] = useState([]);
-  const [reviewInsights, setReviewInsights] = useState({});
-  const [priceHistory, setPriceHistory] = useState({});
-  const [showBundleAI, setShowBundleAI] = useState(false);
-  const [selectedProductForDetails, setSelectedProductForDetails] = useState(null);
-  const [announceMessage, setAnnounceMessage] = useState(''); // For screen readers
   
   // Calculator state
   const [calc, setCalc] = useState({
@@ -133,54 +125,6 @@ export default function ArkBundleHubV4Phase2() {
     setDebugLogs(prev => [log, ...prev].slice(0, 100)); // Keep last 100 logs
     console.log(`[${type.toUpperCase()}] ${message}`, data || '');
   }, []);
-
-  // V4.0 Phase 2: Accessibility Announcer
-  const announce = useCallback((message) => {
-    setAnnounceMessage(message);
-    setTimeout(() => setAnnounceMessage(''), 3000);
-    addDebugLog('info', 'Screen reader announcement', { message });
-  }, [addDebugLog]);
-
-  // CRITICAL: Define getValidationScore BEFORE functions that use it
-  const getValidationScore = (product) => {
-    let score = 0;
-    const reasons = [];
-    
-    // Demand check (BSR)
-    if (product.bsr?.rank) {
-      if (product.bsr.rank < 5000) { score += 25; reasons.push('Excellent demand (BSR < 5000)'); }
-      else if (product.bsr.rank < 15000) { score += 20; reasons.push('Good demand (BSR < 15000)'); }
-      else if (product.bsr.rank < 50000) { score += 15; reasons.push('Moderate demand (BSR < 50000)'); }
-      else { score += 5; reasons.push('Lower demand (BSR > 50000)'); }
-    }
-    
-    // Competition check
-    if (product.competition?.level === 'Low') { score += 25; reasons.push('Low competition'); }
-    else if (product.competition?.level === 'Medium') { score += 15; reasons.push('Medium competition'); }
-    else { score += 5; reasons.push('High competition'); }
-    
-    // Profitability check
-    if (product.price?.margin > 60) { score += 25; reasons.push('High margins (>60%)'); }
-    else if (product.price?.margin > 40) { score += 20; reasons.push('Good margins (>40%)'); }
-    else if (product.price?.margin > 25) { score += 10; reasons.push('Acceptable margins (>25%)'); }
-    
-    // Trend check
-    if (product.bsr?.trend === 'Rising') { score += 15; reasons.push('Rising trend'); }
-    else if (product.bsr?.trend === 'Stable') { score += 10; reasons.push('Stable trend'); }
-    
-    // Reviews check
-    if (product.reviews?.rating >= 4.5) { score += 10; reasons.push('Excellent reviews (4.5+)'); }
-    else if (product.reviews?.rating >= 4.0) { score += 5; reasons.push('Good reviews (4.0+)'); }
-    
-    // Rating
-    let rating = 'Poor';
-    let color = 'red';
-    if (score >= 80) { rating = 'Excellent'; color = 'green'; }
-    else if (score >= 60) { rating = 'Good'; color = 'blue'; }
-    else if (score >= 40) { rating = 'Fair'; color = 'yellow'; }
-    
-    return { score, rating, color, reasons };
-  };
 
   const categories = [
     { id: 'trending', name: '🔥 Trending', searches: ['TikTok viral products right now', 'Amazon movers shakers today', 'trending products this month'] },
@@ -228,7 +172,7 @@ export default function ArkBundleHubV4Phase2() {
   }, [calc]);
 
   // V4.0 NEW: Trend Prediction AI
-  const predictTrend = (product) => {
+  const predictTrend = useCallback((product) => {
     const bsr = product.bsr?.rank || 50000;
     const reviews = product.reviews?.count || 0;
     const viral = product.viral?.score || 0;
@@ -257,10 +201,10 @@ export default function ArkBundleHubV4Phase2() {
     }
     
     return { prediction, confidence, bestTimeToLaunch, window };
-  };
+  }, []);
 
   // V4.0 NEW: Market Saturation Analyzer
-  const analyzeSaturation = (product) => {
+  const analyzeSaturation = useCallback((product) => {
     const sellers = product.competition?.sellers || 50;
     const bsr = product.bsr?.rank || 50000;
     
@@ -287,10 +231,10 @@ export default function ArkBundleHubV4Phase2() {
     }
     
     return { saturation, level, recommendation };
-  };
+  }, []);
 
   // V4.0 NEW: Launch Success Predictor
-  const predictLaunchSuccess = (product) => {
+  const predictLaunchSuccess = useCallback((product) => {
     const validation = getValidationScore(product);
     const trend = predictTrend(product);
     const saturation = analyzeSaturation(product);
@@ -328,7 +272,7 @@ export default function ArkBundleHubV4Phase2() {
       timeToProfit,
       recommendedPPC: Math.round(requiredInventory * (product.price?.cost || 10) * 0.3)
     };
-  };
+  }, []);
 
   // V4.0 NEW: Australian Retail Stock Checker (simulated - would use real APIs in production)
   const checkAustralianRetail = useCallback(async (productName) => {
@@ -361,119 +305,46 @@ export default function ArkBundleHubV4Phase2() {
     return stock;
   }, [addDebugLog]);
 
-  // V4.0 PHASE 2: Advanced Bundle AI Suggester
-  const suggestBundleCombinations = useCallback((allProducts) => {
-    addDebugLog('info', 'Running Bundle AI', { productCount: allProducts.length });
+  // Product Validation Score
+  const getValidationScore = (product) => {
+    let score = 0;
+    const reasons = [];
     
-    const suggestions = [];
-    
-    // Algorithm: Find complementary products
-    for (let i = 0; i < allProducts.length && suggestions.length < 5; i++) {
-      for (let j = i + 1; j < allProducts.length && suggestions.length < 5; j++) {
-        const p1 = allProducts[i];
-        const p2 = allProducts[j];
-        
-        // Calculate compatibility score
-        const sameCat = p1.category === p2.category;
-        const priceRangeMatch = Math.abs((p1.price?.sell || 0) - (p2.price?.sell || 0)) < 15;
-        const bothHighScore = getValidationScore(p1).score >= 60 && getValidationScore(p2).score >= 60;
-        
-        if (sameCat && priceRangeMatch && bothHighScore) {
-          const bundleCost = (p1.price?.cost || 0) + (p2.price?.cost || 0);
-          const bundlePrice = ((p1.price?.sell || 0) + (p2.price?.sell || 0)) * 0.85; // 15% bundle discount
-          const bundleProfit = bundlePrice - bundleCost;
-          const bundleMargin = ((bundleProfit / bundlePrice) * 100).toFixed(1);
-          
-          suggestions.push({
-            id: `bundle-${i}-${j}`,
-            products: [p1, p2],
-            name: `${p1.name.substring(0, 20)}... + ${p2.name.substring(0, 20)}...`,
-            bundleCost,
-            bundlePrice: bundlePrice.toFixed(2),
-            profit: bundleProfit.toFixed(2),
-            margin: bundleMargin,
-            compatibilityScore: 85,
-            reason: '✨ High compatibility: Same category, similar price range, both high-scoring'
-          });
-        }
-      }
+    // Demand check (BSR)
+    if (product.bsr?.rank) {
+      if (product.bsr.rank < 5000) { score += 25; reasons.push('Excellent demand (BSR < 5000)'); }
+      else if (product.bsr.rank < 15000) { score += 20; reasons.push('Good demand (BSR < 15000)'); }
+      else if (product.bsr.rank < 50000) { score += 15; reasons.push('Moderate demand (BSR < 50000)'); }
+      else { score += 5; reasons.push('Lower demand (BSR > 50000)'); }
     }
     
-    addDebugLog('success', `Found ${suggestions.length} bundle suggestions`);
-    return suggestions;
-  }, [addDebugLog, getValidationScore]);
-
-  // V4.0 PHASE 2: Review Intelligence Analyzer
-  const analyzeReviews = useCallback((product) => {
-    addDebugLog('info', 'Analyzing reviews', { product: product.name });
+    // Competition check
+    if (product.competition?.level === 'Low') { score += 25; reasons.push('Low competition'); }
+    else if (product.competition?.level === 'Medium') { score += 15; reasons.push('Medium competition'); }
+    else { score += 5; reasons.push('High competition'); }
     
-    // Simulated review intelligence (in production, would use real review data + AI)
-    const insights = {
-      sentiment: Math.random() > 0.3 ? 'Positive' : Math.random() > 0.5 ? 'Mixed' : 'Negative',
-      sentimentScore: Math.floor(Math.random() * 40 + 60), // 60-100
-      commonPraises: [
-        'Great quality',
-        'Fast shipping',
-        'Good value',
-        'Easy to use'
-      ].sort(() => 0.5 - Math.random()).slice(0, 2),
-      commonComplaints: [
-        'Packaging could be better',
-        'Instructions unclear',
-        'Slightly overpriced'
-      ].sort(() => 0.5 - Math.random()).slice(0, 2),
-      improvementOpportunities: [
-        '📦 Better packaging = competitive edge',
-        '📝 Clearer instructions in listing',
-        '💰 Bundle pricing could increase appeal'
-      ].sort(() => 0.5 - Math.random()).slice(0, 2),
-      reviewTrend: Math.random() > 0.5 ? 'Improving' : 'Stable',
-      responseRate: Math.floor(Math.random() * 40 + 60) + '%'
-    };
+    // Profitability check
+    if (product.price?.margin > 60) { score += 25; reasons.push('High margins (>60%)'); }
+    else if (product.price?.margin > 40) { score += 20; reasons.push('Good margins (>40%)'); }
+    else if (product.price?.margin > 25) { score += 10; reasons.push('Acceptable margins (>25%)'); }
     
-    addDebugLog('success', 'Review analysis complete', insights);
-    return insights;
-  }, [addDebugLog]);
-
-  // V4.0 PHASE 2: Price History Generator
-  const generatePriceHistory = useCallback((product) => {
-    addDebugLog('info', 'Generating price history', { product: product.name });
+    // Trend check
+    if (product.bsr?.trend === 'Rising') { score += 15; reasons.push('Rising trend'); }
+    else if (product.bsr?.trend === 'Stable') { score += 10; reasons.push('Stable trend'); }
     
-    const basePrice = product.price?.sell || 25;
-    const history = [];
+    // Reviews check
+    if (product.reviews?.rating >= 4.5) { score += 10; reasons.push('Excellent reviews (4.5+)'); }
+    else if (product.reviews?.rating >= 4.0) { score += 5; reasons.push('Good reviews (4.0+)'); }
     
-    // Generate 30 days of simulated price data
-    for (let i = 30; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const variation = (Math.random() - 0.5) * 5; // +/- $2.50
-      const price = (basePrice + variation).toFixed(2);
-      
-      history.push({
-        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        price: parseFloat(price),
-        change: variation > 0 ? 'up' : variation < 0 ? 'down' : 'same'
-      });
-    }
+    // Rating
+    let rating = 'Poor';
+    let color = 'red';
+    if (score >= 80) { rating = 'Excellent'; color = 'green'; }
+    else if (score >= 60) { rating = 'Good'; color = 'blue'; }
+    else if (score >= 40) { rating = 'Fair'; color = 'yellow'; }
     
-    const currentPrice = history[history.length - 1].price;
-    const lowestPrice = Math.min(...history.map(h => h.price));
-    const highestPrice = Math.max(...history.map(h => h.price));
-    const avgPrice = (history.reduce((sum, h) => sum + h.price, 0) / history.length).toFixed(2);
-    
-    const priceData = {
-      history,
-      current: currentPrice,
-      lowest: lowestPrice,
-      highest: highestPrice,
-      average: parseFloat(avgPrice),
-      trend: currentPrice > avgPrice ? 'Rising' : currentPrice < avgPrice ? 'Falling' : 'Stable',
-      volatility: highestPrice - lowestPrice > 5 ? 'High' : 'Low'
-    };
-    
-    addDebugLog('success', 'Price history generated', { dataPoints: history.length });
-    return priceData;
-  }, [addDebugLog]);
+    return { score, rating, color, reasons };
+  };
 
   // Enhanced AI Search Function with V4.0 features
   const scan = useCallback(async (searchQuery = '', categoryData = null) => {
@@ -749,11 +620,11 @@ Return ONLY the JSON array starting with [ and ending with ].`
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 rounded-3xl shadow-2xl mb-6 animate-pulse">
-              <Icon name="brain" size={48} className="text-white" aria-hidden="true" />
+              <Icon name="brain" size={48} className="text-white" />
             </div>
             <h1 className="text-4xl font-black text-white mb-2">Ark Bundle Hub</h1>
-            <p className="text-purple-300 font-bold">V4.0 Phase 2 - Ultimate Edition</p>
-            <p className="text-purple-400 text-sm mt-2">🤖 Bundle AI • 📊 Review Intel • 💰 Price History • ♿ Accessible</p>
+            <p className="text-purple-300 font-bold">V4.0 Ultimate Powerhouse</p>
+            <p className="text-purple-400 text-sm mt-2">🇦🇺 AU Retail • AI Predictions • Advanced Analytics</p>
           </div>
           <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/20">
             <div className="space-y-4">
@@ -773,20 +644,19 @@ Return ONLY the JSON array starting with [ and ending with ].`
               </div>
               <button
                 onClick={() => pw === ADMIN_PASSWORD ? setAuth(true) : notify('Invalid password', 'err')}
-                className="w-full py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white font-bold rounded-xl text-lg hover:shadow-2xl transition-all focus:ring-4 focus:ring-amber-300 focus:outline-none"
-                aria-label="Access ARK Bundle Hub V4.0 Phase 2"
+                className="w-full py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white font-bold rounded-xl text-lg"
               >
-                Access Ultimate Edition
+                Access V4.0 Powerhouse
               </button>
             </div>
           </div>
           <div className="mt-6 text-center text-purple-300 text-sm">
-            <p className="mb-2">✨ New in Phase 2:</p>
+            <p className="mb-2">✨ New in V4.0 Phase 1:</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-white/5 rounded-lg p-2">🤖 Bundle AI</div>
-              <div className="bg-white/5 rounded-lg p-2">📊 Review Intel</div>
-              <div className="bg-white/5 rounded-lg p-2">💰 Price History</div>
-              <div className="bg-white/5 rounded-lg p-2">♿ Accessible</div>
+              <div className="bg-white/5 rounded-lg p-2">🏪 AU Retail Stock</div>
+              <div className="bg-white/5 rounded-lg p-2">📈 Trend Predictions</div>
+              <div className="bg-white/5 rounded-lg p-2">🎯 Saturation AI</div>
+              <div className="bg-white/5 rounded-lg p-2">🐛 Debug Panel</div>
             </div>
           </div>
         </div>
@@ -799,24 +669,6 @@ Return ONLY the JSON array starting with [ and ending with ].`
   // Main Dashboard
   return (
     <div className="min-h-screen bg-slate-100">
-      {/* V4.0 Phase 2: Screen Reader Announcements */}
-      <div 
-        role="status" 
-        aria-live="polite" 
-        aria-atomic="true"
-        className="sr-only"
-      >
-        {announceMessage}
-      </div>
-
-      {/* V4.0 Phase 2: Skip to main content for keyboard navigation */}
-      <a 
-        href="#main-content" 
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-6 focus:py-3 focus:bg-amber-500 focus:text-white focus:rounded-lg focus:font-bold focus:shadow-2xl"
-      >
-        Skip to main content
-      </a>
-
       {notif && (
         <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-xl flex items-center gap-2 text-white ${notif.t === 'err' ? 'bg-red-500' : 'bg-green-500'}`}>
           <Icon name="check" size={20} />
@@ -889,77 +741,47 @@ Return ONLY the JSON array starting with [ and ending with ].`
       )}
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-indigo-900 text-white sticky top-0 z-40 shadow-2xl" role="banner">
-        <div className="max-w-7xl mx-auto px-4 py-4" id="main-content">
+      <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-indigo-900 text-white sticky top-0 z-40 shadow-2xl">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white px-5 py-2 rounded-xl font-black text-xl shadow-lg" aria-label="ARK Bundle Hub Logo">
-                <Icon name="brain" size={28} aria-hidden="true" /> ARK
+              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white px-5 py-2 rounded-xl font-black text-xl shadow-lg">
+                <Icon name="brain" size={28} /> ARK
               </div>
               <div>
-                <p className="font-bold text-lg">Ultimate Edition</p>
-                <p className="text-sm text-purple-300">🤖 Bundle AI • 📊 Reviews • v4.2</p>
+                <p className="font-bold text-lg">Ultimate Powerhouse</p>
+                <p className="text-sm text-purple-300">🇦🇺 AU Retail • AI Predictions • v4.0</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="text-right text-xs" aria-label="Session Statistics">
+              <div className="text-right text-xs">
                 <div className="text-purple-300">Searches: {dashboardStats.totalSearches}</div>
                 <div className="text-purple-300">Found: {dashboardStats.productsFound}</div>
               </div>
-              <button 
-                onClick={() => setAuth(false)} 
-                className="p-3 rounded-xl bg-white/10 hover:bg-red-500 transition-all focus:ring-2 focus:ring-white focus:outline-none"
-                aria-label="Logout"
-                title="Logout"
-              >
-                <Icon name="lock" size={20} aria-hidden="true" />
+              <button onClick={() => setAuth(false)} className="p-3 rounded-xl bg-white/10 hover:bg-red-500 transition-all">
+                <Icon name="lock" size={20} />
               </button>
             </div>
           </div>
 
           {/* Main Navigation */}
-          <nav className="flex gap-2 overflow-x-auto pb-2" role="navigation" aria-label="Main navigation">
-            <button 
-              onClick={() => { setActiveTab('discover'); announce('Discover tab selected'); }} 
-              className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 transition-all focus:ring-2 focus:ring-white focus:outline-none ${activeTab === 'discover' ? 'bg-amber-500 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20'}`}
-              aria-label="Discover products"
-              aria-current={activeTab === 'discover' ? 'page' : undefined}
-            >
-              <Icon name="search" size={18} aria-hidden="true" /> Discover
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            <button onClick={() => setActiveTab('discover')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'discover' ? 'bg-amber-500 text-white' : 'bg-white/10 text-white/80'}`}>
+              <Icon name="search" size={18} /> Discover
             </button>
-            <button 
-              onClick={() => { setActiveTab('calculator'); announce('Profit calculator selected'); }} 
-              className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 transition-all focus:ring-2 focus:ring-white focus:outline-none ${activeTab === 'calculator' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20'}`}
-              aria-label="Profit calculator"
-              aria-current={activeTab === 'calculator' ? 'page' : undefined}
-            >
-              <Icon name="calculator" size={18} aria-hidden="true" /> Profit Calc
+            <button onClick={() => setActiveTab('calculator')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'calculator' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/80'}`}>
+              <Icon name="calculator" size={18} /> Profit Calc
             </button>
-            <button 
-              onClick={() => { setActiveTab('competitors'); announce('Competitors tracker selected'); }} 
-              className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 transition-all focus:ring-2 focus:ring-white focus:outline-none ${activeTab === 'competitors' ? 'bg-red-500 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20'}`}
-              aria-label="Competitor tracking"
-              aria-current={activeTab === 'competitors' ? 'page' : undefined}
-            >
-              <Icon name="target" size={18} aria-hidden="true" /> Competitors
+            <button onClick={() => setActiveTab('competitors')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'competitors' ? 'bg-red-500 text-white' : 'bg-white/10 text-white/80'}`}>
+              <Icon name="target" size={18} /> Competitors
             </button>
-            <button 
-              onClick={() => { setActiveTab('saved'); announce(`Saved products, ${saved.length} items`); }} 
-              className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 transition-all focus:ring-2 focus:ring-white focus:outline-none ${activeTab === 'saved' ? 'bg-purple-500 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20'}`}
-              aria-label={`Saved products, ${saved.length} items`}
-              aria-current={activeTab === 'saved' ? 'page' : undefined}
-            >
-              <Icon name="bookmark" size={18} aria-hidden="true" /> Saved ({saved.length})
+            <button onClick={() => setActiveTab('saved')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'saved' ? 'bg-purple-500 text-white' : 'bg-white/10 text-white/80'}`}>
+              <Icon name="bookmark" size={18} /> Saved ({saved.length})
             </button>
-            <button 
-              onClick={() => { setActiveTab('bundles'); announce(`Bundle builder, ${savedBundles.length} saved bundles`); }} 
-              className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 transition-all focus:ring-2 focus:ring-white focus:outline-none ${activeTab === 'bundles' ? 'bg-green-500 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20'}`}
-              aria-label={`Bundle builder, ${savedBundles.length} saved bundles`}
-              aria-current={activeTab === 'bundles' ? 'page' : undefined}
-            >
-              <Icon name="layers" size={18} aria-hidden="true" /> Bundles ({savedBundles.length})
+            <button onClick={() => setActiveTab('bundles')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'bundles' ? 'bg-green-500 text-white' : 'bg-white/10 text-white/80'}`}>
+              <Icon name="layers" size={18} /> Bundles ({savedBundles.length})
             </button>
-          </nav>
+          </div>
         </div>
       </header>
 
@@ -1436,29 +1258,24 @@ Return ONLY the JSON array starting with [ and ending with ].`
           <div>
             <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
               <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
-                <Icon name="bookmark" size={32} className="text-purple-600" aria-hidden="true" />
+                <Icon name="bookmark" size={32} className="text-purple-600" />
                 Saved Products ({saved.length})
               </h2>
-              <p className="text-slate-600 text-sm mt-2">Click "View Details" to see complete product information</p>
             </div>
 
             {saved.length === 0 ? (
               <div className="text-center py-20">
-                <Icon name="bookmark" size={64} className="mx-auto text-slate-300 mb-4" aria-hidden="true" />
+                <Icon name="bookmark" size={64} className="mx-auto text-slate-300 mb-4" />
                 <p className="text-slate-500 text-lg">No saved products yet</p>
-                <p className="text-slate-400 text-sm mt-2">Save products from the Discover tab to build your collection</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {saved.map(p => {
                   const validation = getValidationScore(p);
                   const isExpanded = expanded === p.id;
-                  const trendPrediction = predictTrend(p);
-                  const saturation = analyzeSaturation(p);
-                  const launchSuccess = predictLaunchSuccess(p);
                   
                   return (
-                    <div key={p.id} className="bg-white rounded-2xl border-2 border-purple-200 shadow-lg overflow-hidden hover:shadow-xl transition-all">
+                    <div key={p.id} className="bg-white rounded-2xl border-2 border-purple-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       {/* Validation Score Bar */}
                       <div className={`h-2 bg-gradient-to-r ${validation.color === 'green' ? 'from-green-500 to-emerald-500' : validation.color === 'blue' ? 'from-blue-500 to-cyan-500' : validation.color === 'yellow' ? 'from-yellow-500 to-orange-500' : 'from-red-500 to-rose-500'}`} />
                       
@@ -1467,15 +1284,14 @@ Return ONLY the JSON array starting with [ and ending with ].`
                         <div className="flex justify-between items-start gap-3 mb-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
-                              <span className="text-3xl" aria-hidden="true">{p.emoji || '📦'}</span>
+                              <span className="text-3xl">{p.emoji || '📦'}</span>
                               <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">{p.category}</span>
-                              {/* Trend Arrow */}
                               {p.trend?.direction && (
                                 <span className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full font-bold ${
                                   p.trend.direction === 'Rising' ? 'bg-green-100 text-green-700' :
                                   p.trend.direction === 'Falling' ? 'bg-red-100 text-red-700' :
                                   'bg-blue-100 text-blue-700'
-                                }`} aria-label={`Trend: ${p.trend.direction}`}>
+                                }`}>
                                   {p.trend.direction === 'Rising' ? '↗️' : p.trend.direction === 'Falling' ? '↘️' : '→'} 
                                   {p.trend.direction}
                                 </span>
@@ -1485,7 +1301,7 @@ Return ONLY the JSON array starting with [ and ending with ].`
                             {p.asin && <p className="text-xs text-slate-500">ASIN: {p.asin}</p>}
                           </div>
                           <div className="text-center">
-                            <div className={`text-2xl font-black ${validation.color === 'green' ? 'text-green-600' : validation.color === 'blue' ? 'text-blue-600' : validation.color === 'yellow' ? 'text-yellow-600' : 'text-red-600'}`} aria-label={`Validation score: ${validation.score}`}>
+                            <div className={`text-2xl font-black ${validation.color === 'green' ? 'text-green-600' : validation.color === 'blue' ? 'text-blue-600' : validation.color === 'yellow' ? 'text-yellow-600' : 'text-red-600'}`}>
                               {validation.score}
                             </div>
                             <div className="text-xs text-slate-500">{validation.rating}</div>
@@ -1506,7 +1322,7 @@ Return ONLY the JSON array starting with [ and ending with ].`
                           </div>
                         </div>
 
-                        {/* Expandable Details - SAME AS DISCOVER TAB */}
+                        {/* Expandable Details */}
                         {isExpanded && (
                           <div className="mb-4 space-y-3 border-t-2 border-purple-100 pt-4">
                             {/* Pricing Grid */}
@@ -1579,17 +1395,14 @@ Return ONLY the JSON array starting with [ and ending with ].`
                         <div className="flex gap-2">
                           <button 
                             onClick={() => setExpanded(isExpanded ? null : p.id)} 
-                            className="flex-1 py-2 bg-purple-100 text-purple-700 rounded-xl font-bold hover:bg-purple-200 transition-all flex items-center justify-center gap-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                            aria-expanded={isExpanded}
-                            aria-label={isExpanded ? 'Hide product details' : 'View product details'}
+                            className="flex-1 py-2 bg-purple-100 text-purple-700 rounded-xl font-bold hover:bg-purple-200 transition-all flex items-center justify-center gap-2"
                           >
-                            <Icon name={isExpanded ? 'chevronUp' : 'chevronDown'} size={18} aria-hidden="true" />
+                            <Icon name={isExpanded ? 'chevronUp' : 'chevronDown'} size={18} />
                             {isExpanded ? 'Hide Details' : 'View Details'}
                           </button>
                           <button 
-                            onClick={() => { toggleSave(p); announce(`${p.name} removed from saved`); }} 
-                            className="flex-1 py-2 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 transition-all focus:ring-2 focus:ring-red-500 focus:outline-none"
-                            aria-label="Remove from saved products"
+                            onClick={() => toggleSave(p)} 
+                            className="flex-1 py-2 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 transition-all"
                           >
                             Remove
                           </button>
