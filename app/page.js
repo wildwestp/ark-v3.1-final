@@ -40,6 +40,18 @@ const Icon = ({ name, size = 24, className = "" }) => {
     messageSquare: <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></>,
     truck: <><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></>,
     briefcase: <><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></>,
+    brain: <><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.91.05L12 20V4.5Z" /><path d="M16 8V5c0-1.1.9-2 2-2" /><path d="M12 13h4" /><path d="M12 18h6a2 2 0 0 1 2 2v1" /><path d="M12 8h8" /><path d="M20.5 8a.5 .5 0 1 1-1 0 .5 .5 0 0 1 1 0Z" /></>,
+    flame: <><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></>,
+    lightbulb: <><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /><path d="M9 18h6" /><path d="M10 22h4" /></>,
+    flag: <><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" /></>,
+    timer: <><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2 2" /><path d="m5 3 14 0" /><path d="m9 1 0 2" /><path d="m15 1 0 2" /></>,
+    percent: <><line x1="19" y1="5" x2="5" y2="19" /><circle cx="6.5" cy="6.5" r="2.5" /><circle cx="17.5" cy="17.5" r="2.5" /></>,
+    map: <><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" /><line x1="8" y1="2" x2="8" y2="18" /><line x1="16" y1="6" x2="16" y2="22" /></>,
+    store: <><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></>,
+    bug: <><rect width="8" height="14" x="8" y="6" rx="4" /><path d="m19 7-3 2" /><path d="m5 7 3 2" /><path d="m19 19-3-2" /><path d="m5 19 3-2" /><path d="M20 13h-4" /><path d="M4 13h4" /><path d="m10 4 1 2" /><path d="m14 4-1 2" /></>,
+    code: <><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></>,
+    trendingDown: <><polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" /></>,
+    arrowRight: <><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></>,
   };
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -48,7 +60,7 @@ const Icon = ({ name, size = 24, className = "" }) => {
   );
 };
 
-export default function ArkBundleHubV3() {
+export default function ArkBundleHubV4() {
   const ADMIN_PASSWORD = 'Ark2024Global!';
   
   // Auth state
@@ -70,7 +82,17 @@ export default function ArkBundleHubV3() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [expanded, setExpanded] = useState(null);
-  const [showVersion, setShowVersion] = useState(false);
+  
+  // V4.0 Phase 1 New Features
+  const [showDebug, setShowDebug] = useState(false);
+  const [debugLogs, setDebugLogs] = useState([]);
+  const [showRetailStock, setShowRetailStock] = useState(true);
+  const [dashboardStats, setDashboardStats] = useState({
+    totalSearches: 0,
+    productsFound: 0,
+    avgValidationScore: 0,
+    topCategory: ''
+  });
   
   // Calculator state
   const [calc, setCalc] = useState({
@@ -90,6 +112,19 @@ export default function ArkBundleHubV3() {
     setNotif({ m, t });
     setTimeout(() => setNotif(null), 3000);
   };
+
+  // V4.0 Debug Logger
+  const addDebugLog = useCallback((type, message, data = null) => {
+    const log = {
+      id: Date.now() + Math.random(),
+      timestamp: new Date().toLocaleTimeString(),
+      type, // 'info', 'success', 'error', 'warning'
+      message,
+      data
+    };
+    setDebugLogs(prev => [log, ...prev].slice(0, 100)); // Keep last 100 logs
+    console.log(`[${type.toUpperCase()}] ${message}`, data || '');
+  }, []);
 
   const categories = [
     { id: 'trending', name: '🔥 Trending', searches: ['TikTok viral products right now', 'Amazon movers shakers today', 'trending products this month'] },
@@ -136,6 +171,140 @@ export default function ArkBundleHubV3() {
     };
   }, [calc]);
 
+  // V4.0 NEW: Trend Prediction AI
+  const predictTrend = useCallback((product) => {
+    const bsr = product.bsr?.rank || 50000;
+    const reviews = product.reviews?.count || 0;
+    const viral = product.viral?.score || 0;
+    
+    let prediction = 'Stable';
+    let confidence = 50;
+    let bestTimeToLaunch = 'Now';
+    let window = 90; // days
+    
+    // Rising indicators
+    if (viral > 75 && bsr < 10000) {
+      prediction = 'Rising Fast';
+      confidence = 85;
+      bestTimeToLaunch = 'Immediately';
+      window = 30;
+    } else if (bsr < 20000 && reviews < 500) {
+      prediction = 'Rising';
+      confidence = 70;
+      bestTimeToLaunch = 'Within 2 weeks';
+      window = 45;
+    } else if (bsr > 100000 || viral < 30) {
+      prediction = 'Falling';
+      confidence = 60;
+      bestTimeToLaunch = 'Not recommended';
+      window = 0;
+    }
+    
+    return { prediction, confidence, bestTimeToLaunch, window };
+  }, []);
+
+  // V4.0 NEW: Market Saturation Analyzer
+  const analyzeSaturation = useCallback((product) => {
+    const sellers = product.competition?.sellers || 50;
+    const bsr = product.bsr?.rank || 50000;
+    
+    let saturation = 0;
+    let level = 'Low';
+    let recommendation = '';
+    
+    if (sellers < 20 && bsr < 15000) {
+      saturation = 15;
+      level = 'Blue Ocean';
+      recommendation = 'Excellent opportunity! Low competition with high demand.';
+    } else if (sellers < 50 && bsr < 30000) {
+      saturation = 35;
+      level = 'Low';
+      recommendation = 'Good opportunity. Manageable competition.';
+    } else if (sellers < 100) {
+      saturation = 60;
+      level = 'Medium';
+      recommendation = 'Moderate competition. Differentiation needed.';
+    } else {
+      saturation = 85;
+      level = 'High';
+      recommendation = 'Saturated market. Only enter with unique angle.';
+    }
+    
+    return { saturation, level, recommendation };
+  }, []);
+
+  // V4.0 NEW: Launch Success Predictor
+  const predictLaunchSuccess = useCallback((product) => {
+    const validation = getValidationScore(product);
+    const trend = predictTrend(product);
+    const saturation = analyzeSaturation(product);
+    
+    let probability = 50;
+    let risk = 'Medium';
+    let requiredInventory = 100;
+    let timeToProfit = 90; // days
+    
+    // Calculate success probability
+    probability = (
+      (validation.score * 0.4) +
+      (trend.confidence * 0.3) +
+      ((100 - saturation.saturation) * 0.3)
+    );
+    
+    if (probability >= 75) {
+      risk = 'Low';
+      requiredInventory = 150;
+      timeToProfit = 45;
+    } else if (probability >= 60) {
+      risk = 'Medium';
+      requiredInventory = 100;
+      timeToProfit = 60;
+    } else {
+      risk = 'High';
+      requiredInventory = 50;
+      timeToProfit = 120;
+    }
+    
+    return {
+      probability: Math.round(probability),
+      risk,
+      requiredInventory,
+      timeToProfit,
+      recommendedPPC: Math.round(requiredInventory * (product.price?.cost || 10) * 0.3)
+    };
+  }, []);
+
+  // V4.0 NEW: Australian Retail Stock Checker (simulated - would use real APIs in production)
+  const checkAustralianRetail = useCallback(async (productName) => {
+    addDebugLog('info', 'Checking AU retail stock', { productName });
+    
+    // Simulated retail check - in production, would call Target/Kmart/BigW APIs
+    const retailers = [
+      { name: 'Target AU', url: 'https://www.target.com.au' },
+      { name: 'Kmart', url: 'https://www.kmart.com.au' },
+      { name: 'Big W', url: 'https://www.bigw.com.au' }
+    ];
+    
+    const stock = {};
+    
+    retailers.forEach(retailer => {
+      const hasStock = Math.random() > 0.4; // 60% chance of stock
+      const price = hasStock ? (Math.random() * 30 + 10).toFixed(2) : null;
+      const stockLevel = hasStock ? ['High', 'Medium', 'Low'][Math.floor(Math.random() * 3)] : 'Out of Stock';
+      
+      stock[retailer.name] = {
+        available: hasStock,
+        price,
+        stockLevel,
+        trending: hasStock && Math.random() > 0.7, // 30% chance of trending
+        url: retailer.url
+      };
+    });
+    
+    addDebugLog('success', 'AU retail check complete', stock);
+    return stock;
+  }, [addDebugLog]);
+
   // Product Validation Score
   const getValidationScore = (product) => {
     let score = 0;
@@ -177,49 +346,59 @@ export default function ArkBundleHubV3() {
     return { score, rating, color, reasons };
   };
 
-  // AI Search Function
+  // Enhanced AI Search Function with V4.0 features
   const scan = useCallback(async (searchQuery = '', categoryData = null) => {
     if (scanning) return;
+    
+    const startTime = Date.now();
     setScanning(true);
     setError('');
     setProducts([]);
     
     const cat = categoryData || categories[0];
-    setStatus(`Searching TikTok, Instagram & Amazon...`);
+    setStatus(`🔍 Searching TikTok, Instagram, Amazon & AU Retail...`);
+    addDebugLog('info', 'Search started', { category: cat.name, query: searchQuery });
 
     const now = new Date();
     const currentMonth = now.toLocaleString('en-US', { month: 'long' });
     const currentYear = now.getFullYear();
 
     try {
-      console.log('🔍 Starting search...', { category: cat.name, searchQuery });
+      addDebugLog('info', 'Calling AI API...', { model: 'claude-sonnet-4' });
       
       const res = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `You are a JSON-only API. Return ONLY valid JSON, no explanations.
+          prompt: `You are an advanced product research AI for Amazon FBA sellers in Australia. TODAY: ${currentMonth} ${currentYear}
 
-Search TikTok, Instagram, and Amazon for trending ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪|🎮|🚗/g, '').trim()} products in ${currentMonth} ${currentYear}.
+SEARCH FOR: ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪/g, '').trim()} products ${searchQuery ? '- ' + searchQuery : ''}
 
-Find 8 real products.
+Use web_search tool extensively to find REAL trending products from:
+1. TikTok viral products (current month)
+2. Instagram Reels trending items  
+3. Amazon Best Sellers & Movers & Shakers
+4. Consider Australian retail (Target AU, Kmart, Big W) availability
 
-RESPONSE FORMAT:
+Find 8-10 REAL products with COMPLETE data.
+
+CRITICAL: Return ONLY valid JSON array. NO markdown, NO text before/after.
+
+FORMAT:
 [
-{"name":"Real Product Name","category":"${cat.name}","emoji":"📦","desc":"Why trending","asin":"B08ABC123","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Home","trend":"Rising","monthlySales":600},"reviews":{"count":800,"rating":4.3},"competition":{"sellers":45,"level":"Medium"},"viral":{"score":82,"platform":"Instagram","reason":"Viral reason","views":"2M"},"market":{"urgency":"High"},"suppliers":{"alibaba":7,"cj":9},"profitability":{"breakeven":40,"monthly":1800,"yearly":21600},"bundleWith":["Item A","Item B"]}
+{"name":"Real Product Name","category":"${cat.name}","emoji":"📦","desc":"Why trending (be specific)","asin":"B08REAL123","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Home & Kitchen","monthlySales":600},"reviews":{"count":850,"rating":4.4},"competition":{"sellers":42,"level":"Medium"},"viral":{"score":84,"platform":"TikTok","reason":"Specific viral reason","views":"3.2M"},"trend":{"direction":"Rising","velocity":"Fast"},"suppliers":{"alibaba":7.5,"cj":8.2},"profitability":{"breakeven":35,"monthly":2100,"yearly":25200}}
 ]
 
 Return ONLY the JSON array starting with [ and ending with ].`
         })
       });
 
-      console.log('✅ API response received', { status: res.status, ok: res.ok });
+      addDebugLog('success', 'API response received', { status: res.status });
 
       const data = await res.json();
-      console.log('📦 API Response Data:', JSON.stringify(data, null, 2));
       
       if (data.error) {
-        console.error('❌ API Error:', data.error);
+        addDebugLog('error', 'API returned error', data.error);
         throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
       }
       
@@ -230,31 +409,31 @@ Return ONLY the JSON array starting with [ and ending with ].`
         }
       }
 
-      console.log('📝 Extracted text length:', txt.length);
-      console.log('📝 Extracted text preview:', txt.substring(0, 200));
+      addDebugLog('info', 'Extracted response text', { length: txt.length, preview: txt.substring(0, 150) });
 
       let productArray = null;
       
       const startIdx = txt.indexOf('[');
       const endIdx = txt.lastIndexOf(']');
       
-      console.log('🔎 JSON search:', { startIdx, endIdx, hasArray: startIdx !== -1 && endIdx !== -1 });
+      addDebugLog('info', 'JSON search', { startIdx, endIdx, found: startIdx !== -1 && endIdx !== -1 });
       
       if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
         const jsonStr = txt.substring(startIdx, endIdx + 1);
-        console.log('✂️ Extracted JSON string length:', jsonStr.length);
         
         try {
           productArray = JSON.parse(jsonStr);
-          console.log('✅ JSON parsed successfully!', { count: productArray?.length });
+          addDebugLog('success', 'JSON parsed successfully', { count: productArray?.length });
           
           if (!Array.isArray(productArray) || productArray.length === 0 || !productArray[0].name) {
-            console.warn('⚠️ Invalid product array structure');
+            addDebugLog('warning', 'Invalid product array structure');
             productArray = null;
           }
         } catch (e) {
-          console.error('❌ JSON parse failed:', e.message);
+          addDebugLog('error', 'JSON parse failed', e.message);
         }
+      } else {
+        addDebugLog('error', 'No JSON array found in response');
       }
 
       if (productArray && productArray.length > 0) {
@@ -264,28 +443,40 @@ Return ONLY the JSON array starting with [ and ending with ].`
           price: p.price || { cost: 10, sell: 30, margin: 67, roi: 200 },
           viral: p.viral || { score: 75, platform: 'TikTok' },
           market: p.market || { urgency: 'Medium' },
-          bsr: p.bsr || {},
-          reviews: p.reviews || {},
-          competition: p.competition || { level: 'Medium' },
+          bsr: p.bsr || { rank: 25000 },
+          reviews: p.reviews || { count: 0, rating: 0 },
+          competition: p.competition || { level: 'Medium', sellers: 50 },
+          trend: p.trend || { direction: 'Stable' },
         }));
         
-        console.log('🎉 Products ready:', prods.length);
+        const endTime = Date.now();
+        const duration = ((endTime - startTime) / 1000).toFixed(1);
+        
         setProducts(prods);
+        
+        // Update dashboard stats
+        setDashboardStats(prev => ({
+          totalSearches: prev.totalSearches + 1,
+          productsFound: prev.productsFound + prods.length,
+          avgValidationScore: Math.round(prods.reduce((sum, p) => sum + getValidationScore(p).score, 0) / prods.length),
+          topCategory: cat.name
+        }));
+        
+        addDebugLog('success', `Found ${prods.length} products in ${duration}s`, { duration, count: prods.length });
         notify(`Found ${prods.length} products!`);
       } else {
-        console.error('❌ No valid products found');
-        throw new Error('AI returned no products. Try different category.');
+        addDebugLog('error', 'No valid products in response');
+        throw new Error('AI returned no products. Try different category or search term.');
       }
     } catch (err) {
-      console.error('Search error:', err);
-      const errorMsg = err.message || 'Search failed - check console';
-      setError(errorMsg);
-      notify(errorMsg.substring(0, 50), 'err');
+      addDebugLog('error', 'Search failed', err.message);
+      setError(err.message || 'Search failed - check debug panel');
+      notify(err.message?.substring(0, 50) || 'Search failed', 'err');
     } finally {
       setScanning(false);
       setStatus('');
     }
-  }, [scanning, categories, notify]);
+  }, [scanning, categories, notify, addDebugLog, getValidationScore]);
 
   // Add competitor
   const addCompetitor = useCallback(() => {
@@ -302,24 +493,44 @@ Return ONLY the JSON array starting with [ and ending with ].`
     };
     setCompetitors(prev => [comp, ...prev]);
     setNewAsin('');
+    addDebugLog('success', 'Competitor added', { asin: comp.asin });
     notify('Competitor added!');
-  }, [newAsin, notify]);
+  }, [newAsin, notify, addDebugLog]);
 
   const removeCompetitor = useCallback((id) => {
     setCompetitors(prev => prev.filter(c => c.id !== id));
+    addDebugLog('info', 'Competitor removed');
     notify('Competitor removed');
-  }, [notify]);
+  }, [notify, addDebugLog]);
 
   // Toggle save/bundle
   const toggleSave = useCallback((p) => {
-    setSaved(prev => prev.find(s => s.id === p.id) ? prev.filter(s => s.id !== p.id) : [...prev, p]);
-  }, []);
+    setSaved(prev => {
+      const exists = prev.find(s => s.id === p.id);
+      if (exists) {
+        addDebugLog('info', 'Product unsaved', { name: p.name });
+        return prev.filter(s => s.id !== p.id);
+      } else {
+        addDebugLog('success', 'Product saved', { name: p.name });
+        return [...prev, p];
+      }
+    });
+  }, [addDebugLog]);
 
   const isSaved = useCallback((id) => saved.some(s => s.id === id), [saved]);
 
   const toggleBundle = useCallback((p) => {
-    setBundles(prev => prev.find(b => b.id === p.id) ? prev.filter(b => b.id !== p.id) : [...prev, p]);
-  }, []);
+    setBundles(prev => {
+      const exists = prev.find(b => b.id === p.id);
+      if (exists) {
+        addDebugLog('info', 'Product removed from bundle', { name: p.name });
+        return prev.filter(b => b.id !== p.id);
+      } else {
+        addDebugLog('success', 'Product added to bundle', { name: p.name });
+        return [...prev, p];
+      }
+    });
+  }, [addDebugLog]);
 
   const inBundle = useCallback((id) => bundles.some(b => b.id === id), [bundles]);
 
@@ -340,18 +551,21 @@ Return ONLY the JSON array starting with [ and ending with ].`
     setSavedBundles(prev => [...prev, newBundle]);
     setBundles([]);
     setBundleName('');
+    addDebugLog('success', 'Bundle saved', { name, items: bundles.length });
     notify(`Bundle "${name}" saved!`);
-  }, [bundles, bundleName, savedBundles.length, notify]);
+  }, [bundles, bundleName, savedBundles.length, notify, addDebugLog]);
 
   const deleteSavedBundle = useCallback((id) => {
     setSavedBundles(prev => prev.filter(b => b.id !== id));
+    addDebugLog('info', 'Bundle deleted');
     notify('Bundle deleted');
-  }, [notify]);
+  }, [notify, addDebugLog]);
 
   const loadBundle = useCallback((bundle) => {
     setBundles(bundle.products);
+    addDebugLog('success', 'Bundle loaded', { name: bundle.name });
     notify(`Loaded "${bundle.name}"`);
-  }, [notify]);
+  }, [notify, addDebugLog]);
 
   // Export functions
   const exportCSV = useCallback(() => {
@@ -378,10 +592,26 @@ Return ONLY the JSON array starting with [ and ending with ].`
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ark-products-${Date.now()}.csv`;
+    a.download = `ark-products-v4-${Date.now()}.csv`;
     a.click();
+    addDebugLog('success', 'CSV exported', { products: products.length });
     notify('CSV exported!');
-  }, [products, notify]);
+  }, [products, notify, addDebugLog]);
+
+  // V4.0 Export debug logs
+  const exportDebugLogs = useCallback(() => {
+    const logsText = debugLogs.map(log => 
+      `[${log.timestamp}] [${log.type.toUpperCase()}] ${log.message}${log.data ? '\n  Data: ' + JSON.stringify(log.data, null, 2) : ''}`
+    ).join('\n\n');
+    
+    const blob = new Blob([logsText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ark-debug-logs-${Date.now()}.txt`;
+    a.click();
+    notify('Debug logs exported!');
+  }, [debugLogs, notify]);
 
   // Login screen
   if (!auth) {
@@ -389,11 +619,12 @@ Return ONLY the JSON array starting with [ and ending with ].`
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 rounded-3xl shadow-2xl mb-6">
-              <Icon name="gift" size={48} className="text-white" />
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 rounded-3xl shadow-2xl mb-6 animate-pulse">
+              <Icon name="brain" size={48} className="text-white" />
             </div>
             <h1 className="text-4xl font-black text-white mb-2">Ark Bundle Hub</h1>
-            <p className="text-purple-300">V3.0 Powerhouse Edition</p>
+            <p className="text-purple-300 font-bold">V4.0 Ultimate Powerhouse</p>
+            <p className="text-purple-400 text-sm mt-2">🇦🇺 AU Retail • AI Predictions • Advanced Analytics</p>
           </div>
           <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/20">
             <div className="space-y-4">
@@ -415,8 +646,17 @@ Return ONLY the JSON array starting with [ and ending with ].`
                 onClick={() => pw === ADMIN_PASSWORD ? setAuth(true) : notify('Invalid password', 'err')}
                 className="w-full py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white font-bold rounded-xl text-lg"
               >
-                Access Powerhouse
+                Access V4.0 Powerhouse
               </button>
+            </div>
+          </div>
+          <div className="mt-6 text-center text-purple-300 text-sm">
+            <p className="mb-2">✨ New in V4.0 Phase 1:</p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-white/5 rounded-lg p-2">🏪 AU Retail Stock</div>
+              <div className="bg-white/5 rounded-lg p-2">📈 Trend Predictions</div>
+              <div className="bg-white/5 rounded-lg p-2">🎯 Saturation AI</div>
+              <div className="bg-white/5 rounded-lg p-2">🐛 Debug Panel</div>
             </div>
           </div>
         </div>
@@ -437,22 +677,91 @@ Return ONLY the JSON array starting with [ and ending with ].`
         </div>
       )}
 
+      {/* V4.0 Debug Panel Toggle Button */}
+      <button
+        onClick={() => setShowDebug(!showDebug)}
+        className="fixed bottom-4 right-4 z-50 p-4 bg-slate-800 text-white rounded-full shadow-2xl hover:bg-slate-700 transition-all hover:scale-110"
+        title="Toggle Debug Panel"
+      >
+        <Icon name={showDebug ? 'code' : 'bug'} size={24} />
+      </button>
+
+      {/* V4.0 Debug Panel */}
+      {showDebug && (
+        <div className="fixed bottom-20 right-4 w-96 max-h-96 bg-slate-900 text-white rounded-2xl shadow-2xl z-40 overflow-hidden flex flex-col animate-slide-in">
+          <div className="p-4 bg-slate-800 flex items-center justify-between border-b border-slate-700">
+            <div className="flex items-center gap-2">
+              <Icon name="bug" size={20} className="text-green-400" />
+              <h3 className="font-bold">Debug Panel</h3>
+              <span className="text-xs text-slate-400">({debugLogs.length} logs)</span>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={exportDebugLogs} className="p-2 hover:bg-slate-700 rounded transition-all" title="Export logs">
+                <Icon name="download" size={16} />
+              </button>
+              <button onClick={() => setDebugLogs([])} className="p-2 hover:bg-slate-700 rounded transition-all" title="Clear logs">
+                <Icon name="x" size={16} />
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2 text-xs font-mono">
+            {debugLogs.length === 0 ? (
+              <div className="text-slate-500 text-center py-8">No logs yet. Start searching!</div>
+            ) : (
+              debugLogs.map(log => (
+                <div key={log.id} className={`p-2 rounded transition-all ${
+                  log.type === 'error' ? 'bg-red-900/50 border-l-2 border-red-500' :
+                  log.type === 'success' ? 'bg-green-900/50 border-l-2 border-green-500' :
+                  log.type === 'warning' ? 'bg-yellow-900/50 border-l-2 border-yellow-500' :
+                  'bg-slate-800/50 border-l-2 border-blue-500'
+                }`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-slate-400">{log.timestamp}</span>
+                    <span className={`font-bold text-xs ${
+                      log.type === 'error' ? 'text-red-400' :
+                      log.type === 'success' ? 'text-green-400' :
+                      log.type === 'warning' ? 'text-yellow-400' :
+                      'text-blue-400'
+                    }`}>{log.type.toUpperCase()}</span>
+                  </div>
+                  <div className="text-white text-xs">{log.message}</div>
+                  {log.data && (
+                    <details className="mt-1">
+                      <summary className="text-slate-400 text-xs cursor-pointer hover:text-slate-300">View data</summary>
+                      <div className="mt-1 text-slate-400 text-xs overflow-x-auto bg-slate-950 p-2 rounded">
+                        <pre>{JSON.stringify(log.data, null, 2)}</pre>
+                      </div>
+                    </details>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
-      <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white sticky top-0 z-40 shadow-xl">
+      <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-indigo-900 text-white sticky top-0 z-40 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-400 to-red-500 text-white px-5 py-2 rounded-xl font-black text-xl">
-                <Icon name="gift" size={28} /> ARK
+              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white px-5 py-2 rounded-xl font-black text-xl shadow-lg">
+                <Icon name="brain" size={28} /> ARK
               </div>
               <div>
-                <p className="font-bold text-lg">Powerhouse Intelligence</p>
-                <p className="text-sm text-purple-300">TikTok • Instagram • Amazon • v3.0</p>
+                <p className="font-bold text-lg">Ultimate Powerhouse</p>
+                <p className="text-sm text-purple-300">🇦🇺 AU Retail • AI Predictions • v4.0</p>
               </div>
             </div>
-            <button onClick={() => setAuth(false)} className="p-3 rounded-xl bg-white/10 hover:bg-red-500">
-              <Icon name="lock" size={20} />
-            </button>
+            <div className="flex items-center gap-3">
+              <div className="text-right text-xs">
+                <div className="text-purple-300">Searches: {dashboardStats.totalSearches}</div>
+                <div className="text-purple-300">Found: {dashboardStats.productsFound}</div>
+              </div>
+              <button onClick={() => setAuth(false)} className="p-3 rounded-xl bg-white/10 hover:bg-red-500 transition-all">
+                <Icon name="lock" size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Main Navigation */}
@@ -477,9 +786,9 @@ Return ONLY the JSON array starting with [ and ending with ].`
       </header>
 
       {status && (
-        <div className="bg-amber-500 text-slate-900 py-2 px-4 font-medium flex items-center gap-2 justify-center">
-          <Icon name="loader" size={18} className="animate-spin" />
-          {status}
+        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 px-4 font-medium flex items-center gap-3 justify-center shadow-lg animate-pulse">
+          <Icon name="loader" size={20} className="animate-spin" />
+          <span>{status}</span>
         </div>
       )}
 
@@ -559,9 +868,20 @@ Return ONLY the JSON array starting with [ and ending with ].`
                       {/* Header */}
                       <div className="flex justify-between items-start gap-3 mb-4">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <span className="text-3xl">{p.emoji || '📦'}</span>
                             <span className="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full">{p.category}</span>
+                            {/* V4.0 Trend Arrow */}
+                            {p.trend?.direction && (
+                              <span className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full font-bold ${
+                                p.trend.direction === 'Rising' ? 'bg-green-100 text-green-700' :
+                                p.trend.direction === 'Falling' ? 'bg-red-100 text-red-700' :
+                                'bg-blue-100 text-blue-700'
+                              }`}>
+                                {p.trend.direction === 'Rising' ? '↗️' : p.trend.direction === 'Falling' ? '↘️' : '→'} 
+                                {p.trend.direction}
+                              </span>
+                            )}
                           </div>
                           <h3 className="font-bold text-slate-800 text-lg mb-1">{p.name}</h3>
                           {p.asin && <p className="text-xs text-slate-500">ASIN: {p.asin}</p>}
@@ -576,7 +896,7 @@ Return ONLY the JSON array starting with [ and ending with ].`
 
                       <p className="text-slate-600 text-sm mb-4">{p.desc}</p>
 
-                      {/* Quick Stats */}
+                      {/* V4.0 Quick Stats with Trend & Success Prediction */}
                       <div className="grid grid-cols-2 gap-2 mb-4">
                         <div className="bg-blue-50 p-3 rounded-xl">
                           <div className="text-xs text-slate-500">BSR Rank</div>
