@@ -328,7 +328,7 @@ export default function ArkBundleHubV4Phase2() {
       timeToProfit,
       recommendedPPC: Math.round(requiredInventory * (product.price?.cost || 10) * 0.3)
     };
-  }, []);
+  }, [getValidationScore, predictTrend, analyzeSaturation]);
 
   // V4.0 NEW: Australian Retail Stock Checker (simulated - would use real APIs in production)
   const checkAustralianRetail = useCallback(async (productName) => {
