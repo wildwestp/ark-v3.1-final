@@ -374,26 +374,12 @@ export default function ArkBundleHubV4() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `You are an advanced product research AI for Amazon FBA sellers in Australia. TODAY: ${currentMonth} ${currentYear}
+          prompt: `Amazon FBA product research for ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪/g, '').trim()} ${searchQuery || ''} (${currentMonth} ${currentYear})
 
-SEARCH FOR: ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪/g, '').trim()} products ${searchQuery ? '- ' + searchQuery : ''}
+Use web_search to find 8 trending products from TikTok, Amazon Best Sellers, AU retail.
 
-Use web_search tool extensively to find REAL trending products from:
-1. TikTok viral products (current month)
-2. Instagram Reels trending items  
-3. Amazon Best Sellers & Movers & Shakers
-4. Consider Australian retail (Target AU, Kmart, Big W) availability
-
-Find 8-10 REAL products with COMPLETE data.
-
-CRITICAL: Return ONLY valid JSON array. NO markdown, NO text before/after.
-
-FORMAT:
-[
-{"name":"Real Product Name","category":"${cat.name}","emoji":"📦","desc":"Why trending (be specific)","asin":"B08REAL123","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Home & Kitchen","monthlySales":600},"reviews":{"count":850,"rating":4.4},"competition":{"sellers":42,"level":"Medium"},"viral":{"score":84,"platform":"TikTok","reason":"Specific viral reason","views":"3.2M"},"trend":{"direction":"Rising","velocity":"Fast"},"suppliers":{"alibaba":7.5,"cj":8.2},"profitability":{"breakeven":35,"monthly":2100,"yearly":25200}}
-]
-
-Return ONLY the JSON array starting with [ and ending with ].`
+Return ONLY JSON array (no markdown):
+[{"name":"Product","category":"${cat.name}","emoji":"📦","desc":"trending reason","asin":"B08XXX","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Category","monthlySales":600},"reviews":{"count":850,"rating":4.4},"competition":{"sellers":42,"level":"Medium"},"viral":{"score":84,"platform":"TikTok","reason":"reason","views":"3M"},"trend":{"direction":"Rising","velocity":"Fast"},"suppliers":{"alibaba":7.5,"cj":8.2},"profitability":{"breakeven":35,"monthly":2100,"yearly":25200}}]`
         })
       });
 
