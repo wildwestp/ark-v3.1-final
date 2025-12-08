@@ -116,7 +116,7 @@ export async function POST(request) {
     // STEP 3: SAVE TO CACHE
     // ==========================================
     
-    const supabaseClient = getSupabaseClient();
+    // Reuse supabaseClient from above
     
     if (supabaseClient) {
       const expiresAt = new Date();
