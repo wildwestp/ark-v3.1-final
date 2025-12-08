@@ -2,13 +2,20 @@
 // Features: Groq API (150x cheaper), Supabase caching, smart persistence
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+// Lazy load Supabase to avoid build issues
+let supabase = null;
+
+function getSupabaseClient() {
+  if (!supabase && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
+    const { createClient } = require('@supabase/supabase-js');
+    supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_KEY
+    );
+  }
+  return supabase;
+}
 
 // Simple hash function for cache keys
 function hashQuery(query, category) {
@@ -28,31 +35,35 @@ export async function POST(request) {
     // ==========================================
     console.log('🔍 Checking cache for:', cacheKey);
     
-    const { data: cachedResult, error: cacheError } = await supabase
-      .from('product_cache')
-      .select('*')
-      .eq('cache_key', cacheKey)
-      .gt('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    if (cachedResult && !cacheError) {
-      console.log('✅ Cache HIT! Returning cached data (FREE, instant)');
-      
-      // Update search count for analytics
-      await supabase
+    const supabaseClient = getSupabaseClient();
+    
+    if (supabaseClient) {
+      const { data: cachedResult, error: cacheError } = await supabaseClient
         .from('product_cache')
-        .update({ search_count: cachedResult.search_count + 1 })
-        .eq('id', cachedResult.id);
+        .select('*')
+        .eq('cache_key', cacheKey)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
 
-      return NextResponse.json({
-        success: true,
-        data: cachedResult.products_data,
-        cached: true,
-        cacheAge: Math.floor((Date.now() - new Date(cachedResult.created_at).getTime()) / 1000 / 60), // minutes
-        responseTime: Date.now() - startTime
-      });
+      if (cachedResult && !cacheError) {
+        console.log('✅ Cache HIT! Returning cached data (FREE, instant)');
+        
+        // Update search count for analytics
+        await supabaseClient
+          .from('product_cache')
+          .update({ search_count: cachedResult.search_count + 1 })
+          .eq('id', cachedResult.id);
+
+        return NextResponse.json({
+          success: true,
+          data: cachedResult.products_data,
+          cached: true,
+          cacheAge: Math.floor((Date.now() - new Date(cachedResult.created_at).getTime()) / 1000 / 60), // minutes
+          responseTime: Date.now() - startTime
+        });
+      }
     }
 
     console.log('❌ Cache MISS. Calling Groq API...');
@@ -105,25 +116,29 @@ export async function POST(request) {
     // STEP 3: SAVE TO CACHE
     // ==========================================
     
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24); // Cache for 24 hours
+    const supabaseClient = getSupabaseClient();
+    
+    if (supabaseClient) {
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24); // Cache for 24 hours
 
-    const { error: saveError } = await supabase
-      .from('product_cache')
-      .insert({
-        cache_key: cacheKey,
-        search_query: searchQuery || 'default',
-        category: category || 'general',
-        products_data: responseText,
-        expires_at: expiresAt.toISOString(),
-        search_count: 1
-      });
+      const { error: saveError } = await supabaseClient
+        .from('product_cache')
+        .insert({
+          cache_key: cacheKey,
+          search_query: searchQuery || 'default',
+          category: category || 'general',
+          products_data: responseText,
+          expires_at: expiresAt.toISOString(),
+          search_count: 1
+        });
 
-    if (saveError) {
-      console.error('⚠️ Failed to cache result:', saveError);
-      // Continue anyway - search still worked
-    } else {
-      console.log('💾 Cached for 24 hours');
+      if (saveError) {
+        console.error('⚠️ Failed to cache result:', saveError);
+        // Continue anyway - search still worked
+      } else {
+        console.log('💾 Cached for 24 hours');
+      }
     }
 
     // ==========================================
@@ -175,8 +190,13 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const { userId, bundleName, products } = await request.json();
+    const supabaseClient = getSupabaseClient();
+    
+    if (!supabaseClient) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('user_bundles')
       .insert({
         user_id: userId,
@@ -206,13 +226,19 @@ export async function GET(request) {
       return NextResponse.json({ error: 'userId required' }, { status: 400 });
     }
 
-    const { data: bundles, error: bundlesError } = await supabase
+    const supabaseClient = getSupabaseClient();
+    
+    if (!supabaseClient) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+
+    const { data: bundles, error: bundlesError } = await supabaseClient
       .from('user_bundles')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
-    const { data: saved, error: savedError } = await supabase
+    const { data: saved, error: savedError } = await supabaseClient
       .from('user_saved')
       .select('*')
       .eq('user_id', userId)
