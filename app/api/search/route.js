@@ -4,17 +4,17 @@
 import { NextResponse } from 'next/server';
 
 // Lazy load Supabase to avoid build issues
-let supabase = null;
+let supabaseInstance = null;
 
-function getSupabaseClient() {
-  if (!supabase && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
+function getSupabase() {
+  if (!supabaseInstance && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
     const { createClient } = require('@supabase/supabase-js');
-    supabase = createClient(
+    supabaseInstance = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.SUPABASE_SERVICE_KEY
     );
   }
-  return supabase;
+  return supabaseInstance;
 }
 
 // Simple hash function for cache keys
@@ -26,19 +26,16 @@ export async function POST(request) {
   try {
     const { prompt, category, searchQuery } = await request.json();
     const startTime = Date.now();
-
-    // Create cache key
     const cacheKey = hashQuery(searchQuery || 'default', category || 'general');
+    const db = getSupabase();
 
     // ==========================================
     // STEP 1: CHECK CACHE (FREE & INSTANT!)
     // ==========================================
-    console.log('🔍 Checking cache for:', cacheKey);
-    
-    const supabaseClient = getSupabaseClient();
-    
-    if (supabaseClient) {
-      const { data: cachedResult, error: cacheError } = await supabaseClient
+    if (db) {
+      console.log('🔍 Checking cache for:', cacheKey);
+      
+      const { data: cachedResult, error: cacheError } = await db
         .from('product_cache')
         .select('*')
         .eq('cache_key', cacheKey)
@@ -50,8 +47,8 @@ export async function POST(request) {
       if (cachedResult && !cacheError) {
         console.log('✅ Cache HIT! Returning cached data (FREE, instant)');
         
-        // Update search count for analytics
-        await supabaseClient
+        // Update search count
+        await db
           .from('product_cache')
           .update({ search_count: cachedResult.search_count + 1 })
           .eq('id', cachedResult.id);
@@ -60,7 +57,7 @@ export async function POST(request) {
           success: true,
           data: cachedResult.products_data,
           cached: true,
-          cacheAge: Math.floor((Date.now() - new Date(cachedResult.created_at).getTime()) / 1000 / 60), // minutes
+          cacheAge: Math.floor((Date.now() - new Date(cachedResult.created_at).getTime()) / 1000 / 60),
           responseTime: Date.now() - startTime
         });
       }
@@ -79,7 +76,7 @@ export async function POST(request) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama-3.1-70b-versatile', // Fast & accurate
+        model: 'llama-3.1-70b-versatile',
         messages: [
           {
             role: 'system',
@@ -98,13 +95,13 @@ export async function POST(request) {
     });
 
     if (!groqResponse.ok) {
-      throw new Error(`Groq API error: ${groqResponse.status} ${groqResponse.statusText}`);
+      throw new Error(`Groq API error: ${groqResponse.status}`);
     }
 
     const groqData = await groqResponse.json();
     let responseText = groqData.choices[0]?.message?.content || '[]';
 
-    // Clean response (remove markdown if present)
+    // Clean response
     responseText = responseText
       .replace(/```json\n?/g, '')
       .replace(/```\n?/g, '')
@@ -116,13 +113,11 @@ export async function POST(request) {
     // STEP 3: SAVE TO CACHE
     // ==========================================
     
-    // Reuse supabaseClient from above
-    
-    if (supabaseClient) {
+    if (db) {
       const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 24); // Cache for 24 hours
+      expiresAt.setHours(expiresAt.getHours() + 24);
 
-      const { error: saveError } = await supabaseClient
+      await db
         .from('product_cache')
         .insert({
           cache_key: cacheKey,
@@ -133,30 +128,20 @@ export async function POST(request) {
           search_count: 1
         });
 
-      if (saveError) {
-        console.error('⚠️ Failed to cache result:', saveError);
-        // Continue anyway - search still worked
-      } else {
-        console.log('💾 Cached for 24 hours');
-      }
+      console.log('💾 Cached for 24 hours');
     }
-
-    // ==========================================
-    // STEP 4: RETURN RESPONSE
-    // ==========================================
 
     return NextResponse.json({
       success: true,
       data: responseText,
       cached: false,
-      apiCost: 0.0002, // Approximate cost in USD
+      apiCost: 0.0002,
       responseTime: Date.now() - startTime
     });
 
   } catch (error) {
     console.error('❌ API Error:', error);
 
-    // Friendly error messages
     let errorMessage = 'Search failed. Please try again.';
     let errorType = 'unknown';
 
@@ -166,9 +151,6 @@ export async function POST(request) {
     } else if (error.message.includes('rate limit')) {
       errorMessage = 'Too many searches. Please wait 30 seconds.';
       errorType = 'rate_limit';
-    } else if (error.message.includes('Supabase')) {
-      errorMessage = 'Database connection issue. Your search will still work!';
-      errorType = 'db_warning';
     }
 
     return NextResponse.json(
@@ -182,21 +164,17 @@ export async function POST(request) {
   }
 }
 
-// ==========================================
-// USER DATA ENDPOINTS
-// ==========================================
-
 // Save user bundle
 export async function PUT(request) {
   try {
     const { userId, bundleName, products } = await request.json();
-    const supabaseClient = getSupabaseClient();
+    const db = getSupabase();
     
-    if (!supabaseClient) {
+    if (!db) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
     }
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await db
       .from('user_bundles')
       .insert({
         user_id: userId,
@@ -217,7 +195,7 @@ export async function PUT(request) {
   }
 }
 
-// Get user bundles
+// Get user data
 export async function GET(request) {
   try {
     const userId = request.nextUrl.searchParams.get('userId');
@@ -226,19 +204,19 @@ export async function GET(request) {
       return NextResponse.json({ error: 'userId required' }, { status: 400 });
     }
 
-    const supabaseClient = getSupabaseClient();
+    const db = getSupabase();
     
-    if (!supabaseClient) {
+    if (!db) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
     }
 
-    const { data: bundles, error: bundlesError } = await supabaseClient
+    const { data: bundles } = await db
       .from('user_bundles')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
-    const { data: saved, error: savedError } = await supabaseClient
+    const { data: saved } = await db
       .from('user_saved')
       .select('*')
       .eq('user_id', userId)
