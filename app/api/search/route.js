@@ -131,19 +131,22 @@ Return 8 products with realistic data. If you can't find real products, generate
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 24);
 
-      await db
-        .from('product_cache')
-        .insert({
-          cache_key: cacheKey,
-          search_query: searchQuery || 'default',
-          category: category || 'general',
-          products_data: content,
-          expires_at: expiresAt.toISOString(),
-          search_count: 1
-        })
-        .catch(err => console.error('Cache insert error:', err));
+      try {
+        await db
+          .from('product_cache')
+          .insert({
+            cache_key: cacheKey,
+            search_query: searchQuery || 'default',
+            category: category || 'general',
+            products_data: content,
+            expires_at: expiresAt.toISOString(),
+            search_count: 1
+          });
 
-      console.log('💾 Cached for 24h');
+        console.log('💾 Cached for 24h');
+      } catch (err) {
+        console.error('Cache insert error:', err);
+      }
     }
 
     const totalTime = Date.now() - startTime;
