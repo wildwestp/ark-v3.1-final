@@ -134,10 +134,21 @@ export default function ArkBundleHubV4() {
     { id: 'trending', name: '🔥 Trending', searches: ['TikTok viral products right now', 'Amazon movers shakers today', 'trending products this month'] },
     { id: 'kitchen', name: '🍳 Kitchen', searches: ['kitchen gadgets TikTok viral now', 'cooking accessories trending this week', 'viral kitchen organization'] },
     { id: 'home', name: '🏠 Home', searches: ['home organization TikTok trending', 'storage solutions viral now', 'home decor trending this month'] },
-    { id: 'cleaning', name: '🧹 Cleaning', searches: ['cleaning products TikTok viral now', 'viral cleaning gadgets this week', 'cleaning hacks products trending'] },
     { id: 'beauty', name: '💄 Beauty', searches: ['beauty tools TikTok viral this month', 'skincare gadgets trending now', 'viral makeup accessories'] },
-    { id: 'tech', name: '📱 Tech', searches: ['tech gadgets TikTok viral now', 'phone accessories trending this week', 'viral desk gadgets'] },
+    { id: 'fashion', name: '👕 Fashion', searches: ['fashion accessories TikTok trending', 'clothing items viral now', 'style gadgets this month'] },
+    { id: 'baby', name: '👶 Baby & Kids', searches: ['baby products TikTok viral', 'kids toys trending now', 'parenting gadgets this week'] },
     { id: 'pets', name: '🐕 Pets', searches: ['pet products TikTok viral now', 'dog accessories trending today', 'viral pet gadgets'] },
+    { id: 'garden', name: '🌱 Garden', searches: ['garden tools TikTok trending', 'outdoor products viral now', 'plant accessories this month'] },
+    { id: 'tech', name: '📱 Tech', searches: ['tech gadgets TikTok viral now', 'phone accessories trending this week', 'viral desk gadgets'] },
+    { id: 'gaming', name: '🎮 Gaming', searches: ['gaming accessories TikTok trending', 'PC gaming gear viral now', 'console accessories this month'] },
+    { id: 'audio', name: '🎧 Audio', searches: ['headphones TikTok trending', 'speakers viral this week', 'audio gear popular now'] },
+    { id: 'camera', name: '📷 Camera', searches: ['camera accessories TikTok viral', 'photography gear trending', 'vlogging equipment popular'] },
+    { id: 'fitness', name: '🏋️ Fitness', searches: ['fitness equipment TikTok trending', 'workout gear viral now', 'gym accessories this month'] },
+    { id: 'crafts', name: '🎨 Arts & Crafts', searches: ['craft supplies TikTok viral', 'DIY tools trending now', 'art materials popular'] },
+    { id: 'office', name: '📚 Office', searches: ['office supplies TikTok trending', 'desk accessories viral now', 'stationery popular this month'] },
+    { id: 'auto', name: '🚗 Auto', searches: ['car accessories TikTok viral', 'auto gadgets trending now', 'vehicle tools popular'] },
+    { id: 'travel', name: '🎒 Travel', searches: ['travel accessories TikTok trending', 'luggage gear viral now', 'backpacking products popular'] },
+  ];
     { id: 'fitness', name: '💪 Fitness', searches: ['fitness gadgets TikTok trending', 'workout accessories viral now', 'trending gym equipment'] },
   ];
 
@@ -374,20 +385,12 @@ export default function ArkBundleHubV4() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `Search the web for the top 8 trending ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪/g, '').trim()} products ${searchQuery || ''} in ${currentMonth} ${currentYear}.
+          prompt: `Find 8 trending ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪|👕|👶|🌱|🎮|🎧|📷|🏋️|🎨|📚|🚗|🎒/g, '').trim()} products ${searchQuery || ''} on Amazon/TikTok (${currentMonth} ${currentYear}).
 
-Focus on products that are currently viral on TikTok, trending on Amazon Best Sellers, and available from Australian retailers (Target AU, Kmart, Big W).
+Search: Amazon BSR, TikTok viral, AU retail (Target/Kmart).
+Data needed: Real ASINs, current BSR, reviews 500+, viral metrics.
 
-For each product, find REAL data including:
-- Actual product names and ASINs from Amazon
-- Current BSR rankings and sales estimates
-- Real review counts and ratings
-- Actual competition levels
-- Current viral metrics (TikTok views, Instagram engagement)
-- Real supplier prices from Alibaba/AliExpress
-
-Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
-[{"name":"Actual Product Name","category":"${cat.name}","emoji":"📦","desc":"specific reason it's trending now","asin":"REAL_ASIN","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Home & Kitchen","monthlySales":600},"reviews":{"count":850,"rating":4.4},"competition":{"sellers":42,"level":"Medium"},"viral":{"score":84,"platform":"TikTok","reason":"specific viral reason","views":"3.2M"},"trend":{"direction":"Rising","velocity":"Fast"},"suppliers":{"alibaba":7.5,"cj":8.2},"profitability":{"breakeven":35,"monthly":2100,"yearly":25200}}]`,
+JSON only: [{"name":"Product Name","category":"${cat.name}","emoji":"📦","desc":"trending reason","asin":"B08XXX","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Category","monthlySales":600},"reviews":{"count":850,"rating":4.4},"competition":{"sellers":42,"level":"Medium"},"viral":{"score":84,"platform":"TikTok","reason":"why viral","views":"3.2M"},"trend":{"direction":"Rising","velocity":"Fast"},"suppliers":{"alibaba":7.5,"cj":8.2},"profitability":{"breakeven":35,"monthly":2100,"yearly":25200}}]`,
           category: cat.name,
           searchQuery: searchQuery
         })
@@ -672,8 +675,8 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
               <Icon name="brain" size={48} className="text-white" />
             </div>
             <h1 className="text-4xl font-black text-white mb-2">Ark Bundle Hub</h1>
-            <p className="text-purple-300 font-bold">V5.0 - Perplexity AI Edition (Web Search Enabled!)</p>
-            <p className="text-purple-400 text-sm mt-2">🇦🇺 AU Retail • AI Predictions • Advanced Analytics</p>
+            <p className="text-orange-300 font-bold">V5.1 Final - Production Ready!</p>
+            <p className="text-orange-400 text-sm mt-2">🇦🇺 AU Retail • AI Predictions • Advanced Analytics</p>
           </div>
           <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/20">
             <div className="space-y-4">
@@ -695,11 +698,11 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                 onClick={() => pw === ADMIN_PASSWORD ? setAuth(true) : notify('Invalid password', 'err')}
                 className="w-full py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white font-bold rounded-xl text-lg"
               >
-                Access V5.0 Perplexity
+                Access ARK Scanner
               </button>
             </div>
           </div>
-          <div className="mt-6 text-center text-purple-300 text-sm">
+          <div className="mt-6 text-center text-orange-300 text-sm">
             <p className="mb-2">✨ New in V4.0 Phase 1:</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="bg-white/5 rounded-lg p-2">🏪 AU Retail Stock</div>
@@ -798,14 +801,14 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                 <Icon name="brain" size={28} /> ARK
               </div>
               <div>
-                <p className="font-bold text-lg">V5.0 Perplexity Edition</p>
-                <p className="text-sm text-purple-300">🇦🇺 AU Retail • AI Predictions • v4.0</p>
+                <p className="font-bold text-lg">ARK Bundle Scanner</p>
+                <p className="text-sm text-orange-300">🇦🇺 AU Retail • AI Predictions • v4.0</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right text-xs">
-                <div className="text-purple-300">Searches: {dashboardStats.totalSearches}</div>
-                <div className="text-purple-300">Found: {dashboardStats.productsFound}</div>
+                <div className="text-orange-300">Searches: {dashboardStats.totalSearches}</div>
+                <div className="text-orange-300">Found: {dashboardStats.productsFound}</div>
               </div>
               <button onClick={() => setAuth(false)} className="p-3 rounded-xl bg-white/10 hover:bg-red-500 transition-all">
                 <Icon name="lock" size={20} />
@@ -824,7 +827,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
             <button onClick={() => setActiveTab('competitors')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'competitors' ? 'bg-red-500 text-white' : 'bg-white/10 text-white/80'}`}>
               <Icon name="target" size={18} /> Competitors
             </button>
-            <button onClick={() => setActiveTab('saved')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'saved' ? 'bg-purple-500 text-white' : 'bg-white/10 text-white/80'}`}>
+            <button onClick={() => setActiveTab('saved')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'saved' ? 'bg-orange-500 text-white' : 'bg-white/10 text-white/80'}`}>
               <Icon name="bookmark" size={18} /> Saved ({saved.length})
             </button>
             <button onClick={() => setActiveTab('bundles')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'bundles' ? 'bg-green-500 text-white' : 'bg-white/10 text-white/80'}`}>
@@ -889,18 +892,18 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
 
             {/* V4.3 Bundle AI Button */}
             {products.length >= 2 && (
-              <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-4 shadow-lg mb-6">
+              <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-4 shadow-lg mb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Icon name="brain" size={32} className="text-white" />
                     <div>
                       <h3 className="text-white font-bold text-lg">Bundle AI Suggester</h3>
-                      <p className="text-purple-100 text-sm">Find profitable 2-pack combinations</p>
+                      <p className="text-orange-100 text-sm">Find profitable 2-pack combinations</p>
                     </div>
                   </div>
                   <button
                     onClick={suggestBundles}
-                    className="px-6 py-3 bg-white text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-all flex items-center gap-2"
+                    className="px-6 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-orange-50 transition-all flex items-center gap-2"
                   >
                     <Icon name="sparkles" size={20} />
                     Suggest Bundles
@@ -1000,7 +1003,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                               </div>
                               <div>
                                 <span className="text-slate-500">ROI:</span>
-                                <span className="font-bold text-purple-600 ml-2">{p.price?.roi || 0}%</span>
+                                <span className="font-bold text-orange-600 ml-2">{p.price?.roi || 0}%</span>
                               </div>
                             </div>
                           </div>
@@ -1023,19 +1026,19 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
 
                           {/* Suppliers */}
                           {(p.suppliers?.alibaba || p.suppliers?.cj) && (
-                            <div className="bg-purple-50 rounded-xl p-3">
-                              <h4 className="font-bold text-purple-700 mb-2 text-sm">🏭 Suppliers</h4>
+                            <div className="bg-orange-50 rounded-xl p-3">
+                              <h4 className="font-bold text-orange-700 mb-2 text-sm">🏭 Suppliers</h4>
                               <div className="grid grid-cols-2 gap-2 text-xs">
                                 {p.suppliers?.alibaba && (
                                   <div>
                                     <span className="text-slate-600">Alibaba:</span>
-                                    <span className="font-bold text-purple-600 ml-1">${p.suppliers.alibaba}</span>
+                                    <span className="font-bold text-orange-600 ml-1">${p.suppliers.alibaba}</span>
                                   </div>
                                 )}
                                 {p.suppliers?.cj && (
                                   <div>
                                     <span className="text-slate-600">CJ:</span>
-                                    <span className="font-bold text-purple-600 ml-1">${p.suppliers.cj}</span>
+                                    <span className="font-bold text-orange-600 ml-1">${p.suppliers.cj}</span>
                                   </div>
                                 )}
                               </div>
@@ -1212,9 +1215,9 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                     <div className="text-sm text-blue-600 mb-1">Profit Margin</div>
                     <div className="text-3xl font-black text-blue-700">{calcResults.margin}%</div>
                   </div>
-                  <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-6">
-                    <div className="text-sm text-purple-600 mb-1">ROI</div>
-                    <div className="text-3xl font-black text-purple-700">{calcResults.roi}%</div>
+                  <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
+                    <div className="text-sm text-orange-600 mb-1">ROI</div>
+                    <div className="text-3xl font-black text-orange-700">{calcResults.roi}%</div>
                   </div>
                 </div>
 
@@ -1305,7 +1308,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                           </div>
                           <div>
                             <div className="text-xs text-slate-500">Reviews</div>
-                            <div className="font-bold text-purple-600">{comp.reviews}</div>
+                            <div className="font-bold text-orange-600">{comp.reviews}</div>
                           </div>
                           <div>
                             <div className="text-xs text-slate-500">Rating</div>
@@ -1329,7 +1332,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
           <div>
             <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
               <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
-                <Icon name="bookmark" size={32} className="text-purple-600" />
+                <Icon name="bookmark" size={32} className="text-orange-600" />
                 Saved Products ({saved.length})
               </h2>
             </div>
@@ -1346,7 +1349,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                   const isExpanded = expanded === p.id;
                   
                   return (
-                    <div key={p.id} className="bg-white rounded-2xl border-2 border-purple-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                    <div key={p.id} className="bg-white rounded-2xl border-2 border-orange-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       {/* Validation Score Bar */}
                       <div className={`h-2 bg-gradient-to-r ${validation.color === 'green' ? 'from-green-500 to-emerald-500' : validation.color === 'blue' ? 'from-blue-500 to-cyan-500' : validation.color === 'yellow' ? 'from-yellow-500 to-orange-500' : 'from-red-500 to-rose-500'}`} />
                       
@@ -1356,7 +1359,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <span className="text-3xl">{p.emoji || '📦'}</span>
-                              <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">{p.category}</span>
+                              <span className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-semibold">{p.category}</span>
                               {p.trend?.direction && (
                                 <span className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full font-bold ${
                                   p.trend.direction === 'Rising' ? 'bg-green-100 text-green-700' :
@@ -1395,7 +1398,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
 
                         {/* Expandable Details */}
                         {isExpanded && (
-                          <div className="mb-4 space-y-3 border-t-2 border-purple-100 pt-4">
+                          <div className="mb-4 space-y-3 border-t-2 border-orange-100 pt-4">
                             {/* Pricing Grid */}
                             <div className="bg-slate-50 rounded-xl p-4">
                               <h4 className="font-bold text-slate-700 mb-3 text-sm">💰 Pricing Breakdown</h4>
@@ -1403,7 +1406,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                                 <div><span className="text-slate-500">Cost:</span> <span className="font-bold text-slate-800 ml-2">${p.price?.cost || 0}</span></div>
                                 <div><span className="text-slate-500">Sell:</span> <span className="font-bold text-green-600 ml-2">${p.price?.sell || 0}</span></div>
                                 <div><span className="text-slate-500">Margin:</span> <span className="font-bold text-blue-600 ml-2">{p.price?.margin || 0}%</span></div>
-                                <div><span className="text-slate-500">ROI:</span> <span className="font-bold text-purple-600 ml-2">{p.price?.roi || 0}%</span></div>
+                                <div><span className="text-slate-500">ROI:</span> <span className="font-bold text-orange-600 ml-2">{p.price?.roi || 0}%</span></div>
                               </div>
                             </div>
 
@@ -1466,7 +1469,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                         <div className="flex gap-2">
                           <button 
                             onClick={() => setExpanded(isExpanded ? null : p.id)} 
-                            className="flex-1 py-2 bg-purple-100 text-purple-700 rounded-xl font-bold hover:bg-purple-200 transition-all flex items-center justify-center gap-2"
+                            className="flex-1 py-2 bg-orange-100 text-orange-700 rounded-xl font-bold hover:bg-orange-200 transition-all flex items-center justify-center gap-2"
                           >
                             <Icon name={isExpanded ? 'chevronUp' : 'chevronDown'} size={18} />
                             {isExpanded ? 'Hide Details' : 'View Details'}
@@ -1638,9 +1641,9 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
                           <div className="text-xs text-green-600">Price</div>
                           <div className="text-lg font-bold text-green-700">${bundle.bundlePrice.toFixed(2)}</div>
                         </div>
-                        <div className="bg-purple-50 rounded-lg p-3 text-center">
-                          <div className="text-xs text-purple-600">Profit</div>
-                          <div className="text-lg font-bold text-purple-700">
+                        <div className="bg-orange-50 rounded-lg p-3 text-center">
+                          <div className="text-xs text-orange-600">Profit</div>
+                          <div className="text-lg font-bold text-orange-700">
                             ${(bundle.bundlePrice - bundle.totalCost - (bundle.bundlePrice * 0.15) - 5).toFixed(2)}
                           </div>
                         </div>
@@ -1669,13 +1672,13 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
       {showBundleAI && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+            <div className="bg-gradient-to-r from-orange-600 to-pink-600 p-6">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <Icon name="brain" size={36} className="text-white" />
                   <div>
                     <h2 className="text-2xl font-black text-white">Bundle AI Suggestions</h2>
-                    <p className="text-purple-100">Profitable 2-pack combinations</p>
+                    <p className="text-orange-100">Profitable 2-pack combinations</p>
                   </div>
                 </div>
                 <button
@@ -1696,11 +1699,11 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
               ) : (
                 <div className="space-y-4">
                   {bundleSuggestions.map((bundle, idx) => (
-                    <div key={bundle.id} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-5 border-2 border-purple-200">
+                    <div key={bundle.id} className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl p-5 border-2 border-orange-200">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h3 className="text-lg font-bold text-purple-900">Bundle #{idx + 1}</h3>
-                          <p className="text-sm text-purple-600">Score: {bundle.score}/100</p>
+                          <h3 className="text-lg font-bold text-orange-900">Bundle #{idx + 1}</h3>
+                          <p className="text-sm text-orange-600">Score: {bundle.score}/100</p>
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-black text-green-600">${bundle.profit}</div>
@@ -1710,7 +1713,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
 
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         {bundle.products.map((p, pidx) => (
-                          <div key={pidx} className="bg-white rounded-xl p-3 border border-purple-200">
+                          <div key={pidx} className="bg-white rounded-xl p-3 border border-orange-200">
                             <div className="flex items-center gap-2 mb-2">
                               <span className="text-2xl">{p.emoji}</span>
                               <div className="flex-1">
@@ -1749,7 +1752,7 @@ Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
             <div className="border-t p-4 bg-slate-50">
               <button
                 onClick={() => setShowBundleAI(false)}
-                className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
+                className="w-full py-3 bg-gradient-to-r from-orange-600 to-pink-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
               >
                 Close
               </button>
