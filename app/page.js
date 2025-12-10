@@ -400,7 +400,11 @@ JSON only: [{"name":"Product Name","category":"${cat.name}","emoji":"📦","desc
       
       if (data.error) {
         addDebugLog('error', 'API returned error', data.error);
-        throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
+        // Show user-friendly error message
+        const errorMsg = data.error.includes('API') ? 
+          'AI service issue - check your Perplexity API key in Vercel settings' :
+          data.error;
+        throw new Error(errorMsg);
       }
       
       // Perplexity returns data in data.data
@@ -791,7 +795,7 @@ JSON only: [{"name":"Product Name","category":"${cat.name}","emoji":"📦","desc
       )}
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-indigo-900 text-white sticky top-0 z-40 shadow-2xl">
+      <header className="bg-gradient-to-r from-black via-gray-900 to-gray-800 text-white sticky top-0 z-40 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
@@ -800,7 +804,7 @@ JSON only: [{"name":"Product Name","category":"${cat.name}","emoji":"📦","desc
               </div>
               <div>
                 <p className="font-bold text-lg">ARK Bundle Scanner</p>
-                <p className="text-sm text-orange-300">🇦🇺 AU Retail • AI Predictions • v4.0</p>
+                <p className="text-sm text-orange-300">🇦🇺 AU Retail • AI Predictions • V5.1 Final</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
