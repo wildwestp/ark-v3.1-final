@@ -368,18 +368,26 @@ export default function ArkBundleHubV4() {
     const currentYear = now.getFullYear();
 
     try {
-      addDebugLog('info', 'Calling AI API...', { model: 'groq-llama-3.1-70b' });
+      addDebugLog('info', 'Calling AI API...', { model: 'perplexity-sonar-online' });
       
       const res = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `Amazon FBA product research for ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪/g, '').trim()} ${searchQuery || ''} (${currentMonth} ${currentYear})
+          prompt: `Search the web for the top 8 trending ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪/g, '').trim()} products ${searchQuery || ''} in ${currentMonth} ${currentYear}.
 
-Use web_search to find 8 trending products from TikTok, Amazon Best Sellers, AU retail.
+Focus on products that are currently viral on TikTok, trending on Amazon Best Sellers, and available from Australian retailers (Target AU, Kmart, Big W).
 
-Return ONLY JSON array (no markdown):
-[{"name":"Product","category":"${cat.name}","emoji":"📦","desc":"trending reason","asin":"B08XXX","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Category","monthlySales":600},"reviews":{"count":850,"rating":4.4},"competition":{"sellers":42,"level":"Medium"},"viral":{"score":84,"platform":"TikTok","reason":"reason","views":"3M"},"trend":{"direction":"Rising","velocity":"Fast"},"suppliers":{"alibaba":7.5,"cj":8.2},"profitability":{"breakeven":35,"monthly":2100,"yearly":25200}}]`,
+For each product, find REAL data including:
+- Actual product names and ASINs from Amazon
+- Current BSR rankings and sales estimates
+- Real review counts and ratings
+- Actual competition levels
+- Current viral metrics (TikTok views, Instagram engagement)
+- Real supplier prices from Alibaba/AliExpress
+
+Return ONLY a JSON array with 8 REAL products (no markdown, no explanations):
+[{"name":"Actual Product Name","category":"${cat.name}","emoji":"📦","desc":"specific reason it's trending now","asin":"REAL_ASIN","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Home & Kitchen","monthlySales":600},"reviews":{"count":850,"rating":4.4},"competition":{"sellers":42,"level":"Medium"},"viral":{"score":84,"platform":"TikTok","reason":"specific viral reason","views":"3.2M"},"trend":{"direction":"Rising","velocity":"Fast"},"suppliers":{"alibaba":7.5,"cj":8.2},"profitability":{"breakeven":35,"monthly":2100,"yearly":25200}}]`,
           category: cat.name,
           searchQuery: searchQuery
         })
@@ -394,6 +402,12 @@ Return ONLY JSON array (no markdown):
         throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
       }
       
+      // Perplexity returns data in data.data
+      let txt = data.data || '';
+      
+      if (data.searchEnabled) {
+        addDebugLog('success', 'Web search was enabled', { cached: data.cached });
+      }
       // V5.0 returns data directly in data.data (not data.content)
       let txt = data.data || '';
 
@@ -660,7 +674,7 @@ Return ONLY JSON array (no markdown):
               <Icon name="brain" size={48} className="text-white" />
             </div>
             <h1 className="text-4xl font-black text-white mb-2">Ark Bundle Hub</h1>
-            <p className="text-purple-300 font-bold">V5.0 - Groq AI Edition (150x Cheaper!)</p>
+            <p className="text-purple-300 font-bold">V5.0 - Perplexity AI Edition (Web Search Enabled!)</p>
             <p className="text-purple-400 text-sm mt-2">🇦🇺 AU Retail • AI Predictions • Advanced Analytics</p>
           </div>
           <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/20">
@@ -683,7 +697,7 @@ Return ONLY JSON array (no markdown):
                 onClick={() => pw === ADMIN_PASSWORD ? setAuth(true) : notify('Invalid password', 'err')}
                 className="w-full py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white font-bold rounded-xl text-lg"
               >
-                Access V5.0 Groq
+                Access V5.0 Perplexity
               </button>
             </div>
           </div>
@@ -786,7 +800,7 @@ Return ONLY JSON array (no markdown):
                 <Icon name="brain" size={28} /> ARK
               </div>
               <div>
-                <p className="font-bold text-lg">V5.0 Groq Edition</p>
+                <p className="font-bold text-lg">V5.0 Perplexity Edition</p>
                 <p className="text-sm text-purple-300">🇦🇺 AU Retail • AI Predictions • v4.0</p>
               </div>
             </div>
