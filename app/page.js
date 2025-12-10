@@ -670,7 +670,7 @@ JSON only: [{"name":"Product Name","category":"${cat.name}","emoji":"📦","desc
   // Login screen
   if (!auth) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 rounded-3xl shadow-2xl mb-6 animate-pulse">
@@ -678,7 +678,7 @@ JSON only: [{"name":"Product Name","category":"${cat.name}","emoji":"📦","desc
             </div>
             <h1 className="text-4xl font-black text-white mb-2">Ark Bundle Hub</h1>
             <p className="text-orange-300 font-bold">V5.1 Final - Production Ready!</p>
-            <p className="text-orange-400 text-sm mt-2">🇦🇺 AU Retail • AI Predictions • Advanced Analytics</p>
+            <p className="text-orange-400 text-sm mt-2">🔍 Real-Time Product Research • 17 Categories • Web Search Enabled</p>
           </div>
           <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/20">
             <div className="space-y-4">
@@ -705,12 +705,12 @@ JSON only: [{"name":"Product Name","category":"${cat.name}","emoji":"📦","desc
             </div>
           </div>
           <div className="mt-6 text-center text-orange-300 text-sm">
-            <p className="mb-2">✨ New in V4.0 Phase 1:</p>
+            <p className="mb-2">✨ V5.1 Final Features:</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-white/5 rounded-lg p-2">🏪 AU Retail Stock</div>
-              <div className="bg-white/5 rounded-lg p-2">📈 Trend Predictions</div>
-              <div className="bg-white/5 rounded-lg p-2">🎯 Saturation AI</div>
-              <div className="bg-white/5 rounded-lg p-2">🐛 Debug Panel</div>
+              <div className="bg-white/5 rounded-lg p-2">🔍 Web Search</div>
+              <div className="bg-white/5 rounded-lg p-2">📊 17 Categories</div>
+              <div className="bg-white/5 rounded-lg p-2">🎯 Bundle AI</div>
+              <div className="bg-white/5 rounded-lg p-2">⚡ Optimized</div>
             </div>
           </div>
         </div>
