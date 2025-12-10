@@ -149,8 +149,6 @@ export default function ArkBundleHubV4() {
     { id: 'auto', name: '🚗 Auto', searches: ['car accessories TikTok viral', 'auto gadgets trending now', 'vehicle tools popular'] },
     { id: 'travel', name: '🎒 Travel', searches: ['travel accessories TikTok trending', 'luggage gear viral now', 'backpacking products popular'] },
   ];
-    { id: 'fitness', name: '💪 Fitness', searches: ['fitness gadgets TikTok trending', 'workout accessories viral now', 'trending gym equipment'] },
-  ];
 
   // FBA Fee Calculator
   const calculateFBA = useCallback(() => {
