@@ -34,11 +34,21 @@ export default function Home() {
   // ============================================================================
   const [activeTab, setActiveTab] = useState('search');
   const [toast, setToast] = useState(null);
+  const [mounted, setMounted] = useState(false);
+  
+  // Prevent SSR rendering issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   // ============================================================================
   // STATE MANAGEMENT
