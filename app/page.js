@@ -1,1796 +1,1720 @@
 'use client';
-import React, { useState, useCallback, useMemo } from 'react';
 
-// Comprehensive icon system
-const Icon = ({ name, size = 24, className = "" }) => {
-  const icons = {
-    search: <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />,
-    loader: <path d="M12 2v4m0 12v4m-8-10H2m20 0h-2m-2.93-6.36l-1.41 1.41m-9.9 9.9l-1.41 1.41m0-12.73l1.41 1.41m9.9 9.9l1.41 1.41" />,
-    zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />,
-    check: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>,
-    bookmark: <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />,
-    x: <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>,
-    lock: <><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>,
-    eye: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>,
-    eyeOff: <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></>,
-    layers: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>,
-    plus: <><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></>,
-    download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></>,
-    shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
-    gift: <><polyline points="20 12 20 22 4 22 4 12" /><rect x="2" y="7" width="20" height="5" /><line x1="12" y1="22" x2="12" y2="7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></>,
-    sparkles: <path d="M12 3v18M5.5 8.5l13 7M5.5 15.5l13-7" />,
-    trendingUp: <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></>,
-    chevronDown: <polyline points="6 9 12 15 18 9" />,
-    chevronUp: <polyline points="18 15 12 9 6 15" />,
-    alert: <><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></>,
-    star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />,
-    users: <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
-    barChart: <><line x1="12" y1="20" x2="12" y2="10" /><line x1="18" y1="20" x2="18" y2="4" /><line x1="6" y1="20" x2="6" y2="16" /></>,
-    dollarSign: <><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>,
-    target: <><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></>,
-    package: <><line x1="16.5" y1="9.4" x2="7.5" y2="4.21" /><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></>,
-    activity: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />,
-    instagram: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></>,
-    calculator: <><rect x="4" y="2" width="16" height="20" rx="2" /><line x1="8" y1="6" x2="16" y2="6" /><line x1="8" y1="10" x2="16" y2="10" /><line x1="8" y1="14" x2="16" y2="14" /><line x1="8" y1="18" x2="16" y2="18" /></>,
-    pieChart: <><path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" /></>,
-    trending: <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></>,
-    award: <><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></>,
-    globe: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>,
-    clock: <><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>,
-    messageSquare: <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></>,
-    truck: <><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></>,
-    briefcase: <><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></>,
-    brain: <><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0-1.32 4.24 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 2.96 3.08 2.5 2.5 0 0 0 4.91.05L12 20V4.5Z" /><path d="M16 8V5c0-1.1.9-2 2-2" /><path d="M12 13h4" /><path d="M12 18h6a2 2 0 0 1 2 2v1" /><path d="M12 8h8" /><path d="M20.5 8a.5 .5 0 1 1-1 0 .5 .5 0 0 1 1 0Z" /></>,
-    flame: <><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></>,
-    lightbulb: <><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /><path d="M9 18h6" /><path d="M10 22h4" /></>,
-    flag: <><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" /></>,
-    timer: <><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2 2" /><path d="m5 3 14 0" /><path d="m9 1 0 2" /><path d="m15 1 0 2" /></>,
-    percent: <><line x1="19" y1="5" x2="5" y2="19" /><circle cx="6.5" cy="6.5" r="2.5" /><circle cx="17.5" cy="17.5" r="2.5" /></>,
-    map: <><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" /><line x1="8" y1="2" x2="8" y2="18" /><line x1="16" y1="6" x2="16" y2="22" /></>,
-    store: <><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></>,
-    bug: <><rect width="8" height="14" x="8" y="6" rx="4" /><path d="m19 7-3 2" /><path d="m5 7 3 2" /><path d="m19 19-3-2" /><path d="m5 19 3-2" /><path d="M20 13h-4" /><path d="M4 13h4" /><path d="m10 4 1 2" /><path d="m14 4-1 2" /></>,
-    code: <><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></>,
-    trendingDown: <><polyline points="23 18 13.5 8.5 8.5 13.5 1 6" /><polyline points="17 18 23 18 23 12" /></>,
-    arrowRight: <><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></>,
-  };
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {icons[name]}
-    </svg>
-  );
-};
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
-export default function ArkBundleHubV4() {
-  const ADMIN_PASSWORD = 'Ark2024Global!';
-  
-  // Auth state
-  const [auth, setAuth] = useState(false);
-  const [pw, setPw] = useState('');
-  const [showPw, setShowPw] = useState(false);
-  
-  // Main state
-  const [activeTab, setActiveTab] = useState('discover');
+export default function Home() {
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
+  const [category, setCategory] = useState('');
+  const [keyword, setKeyword] = useState('');
   const [products, setProducts] = useState([]);
-  const [competitors, setCompetitors] = useState([]);
-  const [saved, setSaved] = useState([]);
-  const [bundles, setBundles] = useState([]);
-  const [savedBundles, setSavedBundles] = useState([]);
-  const [bundleName, setBundleName] = useState('');
-  const [scanning, setScanning] = useState(false);
-  const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [expanded, setExpanded] = useState(null);
-  
-  // V4.0 Phase 1 New Features
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDebug, setShowDebug] = useState(false);
   const [debugLogs, setDebugLogs] = useState([]);
-  const [showRetailStock, setShowRetailStock] = useState(true);
-  const [dashboardStats, setDashboardStats] = useState({
-    totalSearches: 0,
-    productsFound: 0,
-    avgValidationScore: 0,
-    topCategory: ''
-  });
-  
-  // V4.3 Phase 2 Lite Features
-  const [bundleSuggestions, setBundleSuggestions] = useState([]);
+  const [savedProducts, setSavedProducts] = useState([]);
+  const [bundles, setBundles] = useState([]);
   const [showBundleAI, setShowBundleAI] = useState(false);
+  const [bundleSuggestion, setBundleSuggestion] = useState('');
+  const [showCompetitors, setShowCompetitors] = useState(false);
+  const [competitors, setCompetitors] = useState([]);
+  const [showAlerts, setShowAlerts] = useState(false);
+  const [alerts, setAlerts] = useState([]);
+  const [priceHistory, setPriceHistory] = useState({});
+  const [bsrHistory, setBsrHistory] = useState({});
+  const [showCharts, setShowCharts] = useState(false);
+  const [selectedChart, setSelectedChart] = useState(null);
   
-  // Calculator state
-  const [calc, setCalc] = useState({
-    cost: 10,
-    sellPrice: 30,
-    weight: 1,
-    size: 'standard',
-    ppcBudget: 300,
+  // Advanced search filters
+  const [filters, setFilters] = useState({
+    minPrice: '',
+    maxPrice: '',
+    minMargin: '',
+    maxBSR: '',
+    minReviews: '',
+    minRating: '',
+    sortBy: 'profit' // profit, margin, bsr, reviews, rating
   });
-  
-  // Competitor tracking
-  const [newAsin, setNewAsin] = useState('');
-  
-  // Notification
-  const [notif, setNotif] = useState(null);
-  const notify = (m, t = 'ok') => {
-    setNotif({ m, t });
-    setTimeout(() => setNotif(null), 3000);
-  };
 
-  // V4.0 Debug Logger
-  const addDebugLog = useCallback((type, message, data = null) => {
-    const log = {
-      id: Date.now() + Math.random(),
-      timestamp: new Date().toLocaleTimeString(),
-      type, // 'info', 'success', 'error', 'warning'
-      message,
-      data
-    };
-    setDebugLogs(prev => [log, ...prev].slice(0, 100)); // Keep last 100 logs
-    console.log(`[${type.toUpperCase()}] ${message}`, data || '');
-  }, []);
-
+  // ============================================================================
+  // MASSIVE CATEGORY EXPANSION - 50+ CATEGORIES
+  // ============================================================================
   const categories = [
-    { id: 'trending', name: '🔥 Trending', searches: ['TikTok viral products right now', 'Amazon movers shakers today', 'trending products this month'] },
-    { id: 'kitchen', name: '🍳 Kitchen', searches: ['kitchen gadgets TikTok viral now', 'cooking accessories trending this week', 'viral kitchen organization'] },
-    { id: 'home', name: '🏠 Home', searches: ['home organization TikTok trending', 'storage solutions viral now', 'home decor trending this month'] },
-    { id: 'beauty', name: '💄 Beauty', searches: ['beauty tools TikTok viral this month', 'skincare gadgets trending now', 'viral makeup accessories'] },
-    { id: 'fashion', name: '👕 Fashion', searches: ['fashion accessories TikTok trending', 'clothing items viral now', 'style gadgets this month'] },
-    { id: 'baby', name: '👶 Baby & Kids', searches: ['baby products TikTok viral', 'kids toys trending now', 'parenting gadgets this week'] },
-    { id: 'pets', name: '🐕 Pets', searches: ['pet products TikTok viral now', 'dog accessories trending today', 'viral pet gadgets'] },
-    { id: 'garden', name: '🌱 Garden', searches: ['garden tools TikTok trending', 'outdoor products viral now', 'plant accessories this month'] },
-    { id: 'tech', name: '📱 Tech', searches: ['tech gadgets TikTok viral now', 'phone accessories trending this week', 'viral desk gadgets'] },
-    { id: 'gaming', name: '🎮 Gaming', searches: ['gaming accessories TikTok trending', 'PC gaming gear viral now', 'console accessories this month'] },
-    { id: 'audio', name: '🎧 Audio', searches: ['headphones TikTok trending', 'speakers viral this week', 'audio gear popular now'] },
-    { id: 'camera', name: '📷 Camera', searches: ['camera accessories TikTok viral', 'photography gear trending', 'vlogging equipment popular'] },
-    { id: 'fitness', name: '🏋️ Fitness', searches: ['fitness equipment TikTok trending', 'workout gear viral now', 'gym accessories this month'] },
-    { id: 'crafts', name: '🎨 Arts & Crafts', searches: ['craft supplies TikTok viral', 'DIY tools trending now', 'art materials popular'] },
-    { id: 'office', name: '📚 Office', searches: ['office supplies TikTok trending', 'desk accessories viral now', 'stationery popular this month'] },
-    { id: 'auto', name: '🚗 Auto', searches: ['car accessories TikTok viral', 'auto gadgets trending now', 'vehicle tools popular'] },
-    { id: 'travel', name: '🎒 Travel', searches: ['travel accessories TikTok trending', 'luggage gear viral now', 'backpacking products popular'] },
+    // YOUR SHOP BUNDLES
+    {
+      id: 'alpha-performance',
+      name: '💪 Alpha Performance',
+      icon: '🏋️',
+      description: 'Fitness & Gym Equipment',
+      searches: [
+        'gym equipment bundle',
+        'resistance bands set',
+        'fitness gear pack',
+        'workout accessories',
+        'exercise equipment kit',
+        'home gym essentials',
+        'strength training gear',
+        'fitness starter pack'
+      ]
+    },
+    {
+      id: 'executive-grooming',
+      name: '✂️ Executive Grooming',
+      icon: '💼',
+      description: "Men's Grooming & Care",
+      searches: [
+        'mens grooming kit',
+        'beard care set',
+        'shaving kit premium',
+        'cologne gift set',
+        'skincare men bundle',
+        'grooming essentials',
+        'barber tools kit',
+        'mens personal care'
+      ]
+    },
+    {
+      id: 'tactical-edc',
+      name: '🔦 Tactical EDC',
+      icon: '⚔️',
+      description: 'Everyday Carry & Survival',
+      searches: [
+        'edc gear bundle',
+        'tactical flashlight',
+        'survival kit',
+        'multi tool set',
+        'pocket knife combo',
+        'everyday carry essentials',
+        'tactical accessories',
+        'emergency preparedness'
+      ]
+    },
+    {
+      id: 'home-gym',
+      name: '🏠 Home Gym Starter',
+      icon: '🎯',
+      description: 'Home Fitness Equipment',
+      searches: [
+        'home gym equipment',
+        'adjustable dumbbells',
+        'yoga mat set',
+        'jump rope fitness',
+        'foam roller',
+        'workout bench',
+        'kettlebell set',
+        'exercise ball'
+      ]
+    },
+    {
+      id: 'desk-commander',
+      name: '🖥️ Desk Commander',
+      icon: '💻',
+      description: 'Office & Productivity',
+      searches: [
+        'desk accessories bundle',
+        'standing desk mat',
+        'blue light glasses',
+        'cable organizer set',
+        'desk lamp led',
+        'ergonomic mouse pad',
+        'monitor stand',
+        'desk organization'
+      ]
+    },
+    {
+      id: 'weekend-warrior',
+      name: '🏕️ Weekend Warrior',
+      icon: '⛰️',
+      description: 'Outdoor & Adventure',
+      searches: [
+        'camping gear bundle',
+        'hiking backpack',
+        'outdoor survival kit',
+        'portable speaker waterproof',
+        'sunglasses polarized',
+        'cooler bag insulated',
+        'camping accessories',
+        'outdoor essentials'
+      ]
+    },
+    {
+      id: 'gentleman-whiskey',
+      name: '🥃 Gentleman\'s Set',
+      icon: '🎩',
+      description: 'Bar & Spirits',
+      searches: [
+        'whiskey glass set',
+        'whiskey stones',
+        'decanter crystal',
+        'bar accessories',
+        'cocktail kit',
+        'cigar accessories',
+        'bourbon gift set',
+        'barware collection'
+      ]
+    },
+    {
+      id: 'tech-essentials',
+      name: '📱 Tech Essentials',
+      icon: '⚡',
+      description: 'Electronics & Gadgets',
+      searches: [
+        'wireless earbuds',
+        'power bank portable',
+        'phone stand adjustable',
+        'usb cable kit',
+        'screen cleaner',
+        'tech accessories bundle',
+        'smartphone gadgets',
+        'charging station'
+      ]
+    },
+
+    // EXPANDED AMAZON FBA CATEGORIES
+    {
+      id: 'kitchen',
+      name: '🍳 Kitchen & Dining',
+      icon: '🔪',
+      description: 'Cookware & Kitchen Tools',
+      searches: [
+        'kitchen utensil set',
+        'cookware set nonstick',
+        'knife set professional',
+        'cutting board set',
+        'measuring cups spoons',
+        'food storage containers',
+        'baking tools',
+        'kitchen gadgets'
+      ]
+    },
+    {
+      id: 'pet-supplies',
+      name: '🐾 Pet Supplies',
+      icon: '🐕',
+      description: 'Dog, Cat & Pet Care',
+      searches: [
+        'dog toys bundle',
+        'cat toys interactive',
+        'pet grooming kit',
+        'dog leash collar set',
+        'pet feeding bowls',
+        'cat scratching post',
+        'dog training treats',
+        'pet care essentials'
+      ]
+    },
+    {
+      id: 'baby-products',
+      name: '👶 Baby Products',
+      icon: '🍼',
+      description: 'Baby Care & Essentials',
+      searches: [
+        'baby bottles set',
+        'diaper bag organizer',
+        'baby toys educational',
+        'pacifier clip set',
+        'baby grooming kit',
+        'teething toys',
+        'baby care bundle',
+        'nursery essentials'
+      ]
+    },
+    {
+      id: 'automotive',
+      name: '🚗 Automotive',
+      icon: '🔧',
+      description: 'Car Accessories & Tools',
+      searches: [
+        'car cleaning kit',
+        'car phone mount',
+        'tire pressure gauge',
+        'jumper cables',
+        'car vacuum cleaner',
+        'car organizer trunk',
+        'dash cam',
+        'auto detailing tools'
+      ]
+    },
+    {
+      id: 'toys-games',
+      name: '🎮 Toys & Games',
+      icon: '🧩',
+      description: 'Kids Toys & Board Games',
+      searches: [
+        'building blocks set',
+        'board games family',
+        'puzzle set kids',
+        'stem toys educational',
+        'action figures set',
+        'card games bundle',
+        'outdoor toys kids',
+        'learning toys toddler'
+      ]
+    },
+    {
+      id: 'beauty-personal',
+      name: '💄 Beauty & Personal',
+      icon: '✨',
+      description: 'Beauty & Personal Care',
+      searches: [
+        'makeup brush set',
+        'skincare routine bundle',
+        'hair styling tools',
+        'nail care kit',
+        'facial cleansing brush',
+        'makeup organizer',
+        'beauty tools set',
+        'cosmetic accessories'
+      ]
+    },
+    {
+      id: 'sports-outdoors',
+      name: '⚽ Sports & Outdoors',
+      icon: '🏃',
+      description: 'Sports Equipment & Gear',
+      searches: [
+        'basketball accessories',
+        'soccer training equipment',
+        'tennis racket set',
+        'baseball glove bat',
+        'cycling accessories',
+        'swimming goggles',
+        'sports water bottle',
+        'athletic gear bundle'
+      ]
+    },
+    {
+      id: 'garden-outdoor',
+      name: '🌱 Garden & Outdoor',
+      icon: '🌻',
+      description: 'Gardening & Patio',
+      searches: [
+        'garden tools set',
+        'plant pots decorative',
+        'gardening gloves',
+        'watering can set',
+        'seed starter kit',
+        'pruning shears',
+        'outdoor planters',
+        'gardening accessories'
+      ]
+    },
+    {
+      id: 'office-school',
+      name: '📚 Office & School',
+      icon: '✏️',
+      description: 'Stationery & Supplies',
+      searches: [
+        'pens set premium',
+        'notebook journal set',
+        'desk organizer',
+        'sticky notes bundle',
+        'highlighter set',
+        'pencil case accessories',
+        'office supplies kit',
+        'school supplies bundle'
+      ]
+    },
+    {
+      id: 'travel',
+      name: '✈️ Travel & Luggage',
+      icon: '🧳',
+      description: 'Travel Accessories',
+      searches: [
+        'packing cubes set',
+        'travel pillow neck',
+        'luggage tags',
+        'travel adapter universal',
+        'toiletry bag hanging',
+        'travel bottles tsa',
+        'luggage organizer',
+        'travel essentials kit'
+      ]
+    },
+    {
+      id: 'crafts-sewing',
+      name: '✂️ Crafts & Sewing',
+      icon: '🧵',
+      description: 'Arts, Crafts & DIY',
+      searches: [
+        'sewing kit complete',
+        'crochet hooks set',
+        'craft supplies bundle',
+        'knitting needles',
+        'embroidery kit',
+        'art supplies set',
+        'fabric scissors',
+        'crafting tools'
+      ]
+    },
+    {
+      id: 'electronics',
+      name: '⚡ Electronics',
+      icon: '🔌',
+      description: 'Gadgets & Accessories',
+      searches: [
+        'bluetooth speaker',
+        'smart watch',
+        'gaming headset',
+        'laptop stand',
+        'webcam hd',
+        'keyboard mouse combo',
+        'usb hub',
+        'cable management'
+      ]
+    },
+    {
+      id: 'health-wellness',
+      name: '🧘 Health & Wellness',
+      icon: '💊',
+      description: 'Health & Wellness Products',
+      searches: [
+        'yoga accessories kit',
+        'meditation cushion',
+        'foam roller massage',
+        'resistance bands therapy',
+        'essential oils set',
+        'fitness tracker',
+        'massage gun',
+        'wellness bundle'
+      ]
+    },
+    {
+      id: 'camping-hiking',
+      name: '⛺ Camping & Hiking',
+      icon: '🥾',
+      description: 'Camping & Hiking Gear',
+      searches: [
+        'camping cookware set',
+        'hiking backpack',
+        'sleeping bag',
+        'camping tent',
+        'trekking poles',
+        'camping lantern',
+        'portable stove',
+        'camping essentials'
+      ]
+    },
+    {
+      id: 'fishing',
+      name: '🎣 Fishing',
+      icon: '🐟',
+      description: 'Fishing Gear & Tackle',
+      searches: [
+        'fishing lures set',
+        'fishing rod combo',
+        'tackle box organizer',
+        'fishing hooks assorted',
+        'fishing line',
+        'fishing pliers tools',
+        'bait bucket',
+        'fishing accessories'
+      ]
+    },
+    {
+      id: 'cycling',
+      name: '🚴 Cycling',
+      icon: '🚲',
+      description: 'Bike Accessories',
+      searches: [
+        'bike lights set',
+        'bike lock heavy duty',
+        'bike repair kit',
+        'bike water bottle holder',
+        'cycling gloves',
+        'bike phone mount',
+        'bike pump portable',
+        'cycling accessories'
+      ]
+    },
+    {
+      id: 'photography',
+      name: '📷 Photography',
+      icon: '📸',
+      description: 'Camera Accessories',
+      searches: [
+        'camera lens kit',
+        'tripod smartphone',
+        'camera bag',
+        'memory card bundle',
+        'lens cleaning kit',
+        'camera strap',
+        'photography lighting',
+        'camera accessories'
+      ]
+    },
+    {
+      id: 'music',
+      name: '🎵 Music',
+      icon: '🎸',
+      description: 'Musical Instruments & Accessories',
+      searches: [
+        'guitar picks set',
+        'guitar strings bundle',
+        'drum sticks set',
+        'microphone stand',
+        'guitar capo',
+        'music stand',
+        'instrument cables',
+        'music accessories'
+      ]
+    },
+    {
+      id: 'party-events',
+      name: '🎉 Party & Events',
+      icon: '🎈',
+      description: 'Party Supplies & Decorations',
+      searches: [
+        'party decorations set',
+        'balloons bundle',
+        'party favors bulk',
+        'tablecloth decorative',
+        'party games',
+        'candles birthday',
+        'party supplies kit',
+        'celebration essentials'
+      ]
+    },
+    {
+      id: 'cleaning',
+      name: '🧹 Cleaning',
+      icon: '🧼',
+      description: 'Cleaning Supplies & Tools',
+      searches: [
+        'cleaning supplies bundle',
+        'microfiber cloths set',
+        'spray bottles',
+        'scrub brushes set',
+        'cleaning gloves',
+        'sponges variety pack',
+        'cleaning caddy organizer',
+        'cleaning tools kit'
+      ]
+    },
+    {
+      id: 'storage-organization',
+      name: '📦 Storage & Organization',
+      icon: '🗄️',
+      description: 'Storage Solutions',
+      searches: [
+        'storage bins set',
+        'drawer organizer',
+        'closet organizer',
+        'shoe storage',
+        'under bed storage',
+        'storage baskets',
+        'wall shelves',
+        'organization accessories'
+      ]
+    },
+    {
+      id: 'bathroom',
+      name: '🚿 Bathroom',
+      icon: '🛁',
+      description: 'Bath & Shower Accessories',
+      searches: [
+        'shower curtain set',
+        'bathroom organizer',
+        'bath mat non slip',
+        'shower caddy',
+        'towel hooks',
+        'soap dispenser set',
+        'toothbrush holder',
+        'bathroom accessories'
+      ]
+    },
+    {
+      id: 'bedding',
+      name: '🛏️ Bedding',
+      icon: '😴',
+      description: 'Bedding & Sleep Accessories',
+      searches: [
+        'bed sheets set',
+        'pillow set',
+        'comforter set',
+        'mattress protector',
+        'blanket throw',
+        'pillow cases',
+        'bed skirt',
+        'bedding essentials'
+      ]
+    },
+    {
+      id: 'seasonal',
+      name: '🎄 Seasonal',
+      icon: '❄️',
+      description: 'Holiday & Seasonal Items',
+      searches: [
+        'christmas decorations',
+        'halloween costumes',
+        'easter decorations',
+        'valentines day gifts',
+        'summer beach toys',
+        'winter accessories',
+        'holiday lights',
+        'seasonal decor'
+      ]
+    },
+    {
+      id: 'luggage-bags',
+      name: '👜 Bags & Luggage',
+      icon: '🎒',
+      description: 'Backpacks, Bags & Cases',
+      searches: [
+        'backpack laptop',
+        'duffel bag gym',
+        'messenger bag',
+        'tote bag canvas',
+        'crossbody bag',
+        'makeup bag organizer',
+        'lunch bag insulated',
+        'bag accessories'
+      ]
+    },
+    {
+      id: 'jewelry-watches',
+      name: '⌚ Jewelry & Watches',
+      icon: '💍',
+      description: 'Jewelry & Watch Accessories',
+      searches: [
+        'jewelry organizer box',
+        'watch bands replacement',
+        'necklace set',
+        'bracelet set',
+        'earrings set',
+        'watch case',
+        'jewelry cleaning kit',
+        'jewelry storage'
+      ]
+    },
+    {
+      id: 'footwear-accessories',
+      name: '👟 Footwear Accessories',
+      icon: '🥾',
+      description: 'Shoe Care & Accessories',
+      searches: [
+        'shoe organizer',
+        'shoe cleaning kit',
+        'shoe insoles',
+        'shoe laces set',
+        'shoe trees',
+        'shoe horn',
+        'boot storage',
+        'shoe care products'
+      ]
+    },
+    {
+      id: 'phone-tablet',
+      name: '📱 Phone & Tablet',
+      icon: '📲',
+      description: 'Mobile Accessories',
+      searches: [
+        'phone case protective',
+        'screen protector',
+        'phone charger fast',
+        'phone holder car',
+        'tablet case',
+        'stylus pen',
+        'phone accessories bundle',
+        'mobile tech essentials'
+      ]
+    },
+    {
+      id: 'computer',
+      name: '💻 Computer',
+      icon: '⌨️',
+      description: 'Computer Accessories',
+      searches: [
+        'laptop sleeve',
+        'wireless mouse',
+        'keyboard mechanical',
+        'laptop stand',
+        'usb hub multiport',
+        'laptop cooling pad',
+        'computer cleaning kit',
+        'pc accessories'
+      ]
+    },
+    {
+      id: 'smart-home',
+      name: '🏡 Smart Home',
+      icon: '💡',
+      description: 'Smart Home Devices',
+      searches: [
+        'smart light bulbs',
+        'smart plug wifi',
+        'security camera',
+        'doorbell camera',
+        'smart speaker',
+        'smart thermostat',
+        'motion sensor',
+        'smart home bundle'
+      ]
+    },
+    {
+      id: 'audio',
+      name: '🎧 Audio',
+      icon: '🔊',
+      description: 'Headphones & Audio Gear',
+      searches: [
+        'wireless headphones',
+        'earbuds noise cancelling',
+        'gaming headset',
+        'bluetooth speaker',
+        'aux cable bundle',
+        'headphone stand',
+        'audio accessories',
+        'sound equipment'
+      ]
+    },
+    {
+      id: 'gaming',
+      name: '🎮 Gaming',
+      icon: '🕹️',
+      description: 'Gaming Accessories',
+      searches: [
+        'gaming mouse pad',
+        'controller charging dock',
+        'gaming chair cushion',
+        'headset stand',
+        'gaming keyboard',
+        'controller grips',
+        'cable management gaming',
+        'gaming setup accessories'
+      ]
+    },
+    {
+      id: 'books-reading',
+      name: '📖 Books & Reading',
+      icon: '📚',
+      description: 'Reading Accessories',
+      searches: [
+        'book light reading',
+        'book stand holder',
+        'bookmark set',
+        'book sleeve cover',
+        'reading pillow',
+        'book organizer',
+        'reading glasses',
+        'bookend set'
+      ]
+    },
+    {
+      id: 'meditation',
+      name: '🧘 Meditation & Yoga',
+      icon: '☯️',
+      description: 'Meditation & Mindfulness',
+      searches: [
+        'meditation cushion',
+        'yoga mat premium',
+        'yoga blocks set',
+        'yoga strap',
+        'singing bowl',
+        'incense holder',
+        'meditation timer',
+        'mindfulness accessories'
+      ]
+    },
+    {
+      id: 'emergency-prep',
+      name: '🚨 Emergency Prep',
+      icon: '⚠️',
+      description: 'Emergency & Preparedness',
+      searches: [
+        'first aid kit',
+        'emergency food supply',
+        'survival blanket',
+        'emergency radio',
+        'fire extinguisher',
+        'emergency flashlight',
+        'survival kit complete',
+        'disaster preparedness'
+      ]
+    },
+    {
+      id: 'men-fashion',
+      name: '👔 Men\'s Fashion',
+      icon: '🕴️',
+      description: 'Men\'s Accessories',
+      searches: [
+        'mens wallet leather',
+        'tie set mens',
+        'belt mens leather',
+        'cufflinks set',
+        'mens hat',
+        'mens sunglasses',
+        'mens accessories bundle',
+        'fashion accessories men'
+      ]
+    },
+    {
+      id: 'women-fashion',
+      name: '👗 Women\'s Fashion',
+      icon: '👠',
+      description: 'Women\'s Accessories',
+      searches: [
+        'womens handbag',
+        'scarf set women',
+        'hair accessories set',
+        'womens sunglasses',
+        'jewelry set women',
+        'womens wallet',
+        'fashion accessories women',
+        'womens accessory bundle'
+      ]
+    },
+    {
+      id: 'kids-fashion',
+      name: '👧 Kids Fashion',
+      icon: '🧒',
+      description: 'Kids Accessories',
+      searches: [
+        'kids backpack',
+        'kids lunchbox',
+        'kids water bottle',
+        'kids hat set',
+        'kids accessories bundle',
+        'school supplies kids',
+        'kids fashion accessories',
+        'children accessories'
+      ]
+    },
+    {
+      id: 'laundry',
+      name: '🧺 Laundry',
+      icon: '👕',
+      description: 'Laundry Accessories',
+      searches: [
+        'laundry hamper',
+        'drying rack',
+        'laundry basket set',
+        'clothes pins',
+        'laundry bag mesh',
+        'iron board cover',
+        'laundry organizer',
+        'laundry accessories'
+      ]
+    }
   ];
 
-  // FBA Fee Calculator
-  const calculateFBA = useCallback(() => {
-    const { cost, sellPrice, weight, size, ppcBudget } = calc;
-    
-    // FBA fees (simplified calculation)
-    const referralFee = sellPrice * 0.15; // 15% Amazon referral
-    const fbaFee = size === 'standard' ? (weight < 1 ? 3.22 : 3.22 + (weight - 1) * 0.50) : 
-                    (weight < 1 ? 4.75 : 4.75 + (weight - 1) * 0.80);
-    const storageFee = 0.75; // Monthly per unit
-    
-    const totalFees = referralFee + fbaFee + storageFee;
-    const profit = sellPrice - cost - totalFees;
-    const margin = ((profit / sellPrice) * 100).toFixed(1);
-    const roi = ((profit / cost) * 100).toFixed(0);
-    
-    // Break-even calculation
-    const breakEvenUnits = Math.ceil(ppcBudget / profit);
-    const monthlyProfit = (profit * 300).toFixed(0); // Assuming 300 units/mo
-    const yearlyProfit = (profit * 3600).toFixed(0);
-    
-    return {
-      referralFee: referralFee.toFixed(2),
-      fbaFee: fbaFee.toFixed(2),
-      storageFee: storageFee.toFixed(2),
-      totalFees: totalFees.toFixed(2),
-      profit: profit.toFixed(2),
-      margin,
-      roi,
-      breakEvenUnits,
-      monthlyProfit,
-      yearlyProfit
-    };
-  }, [calc]);
-
-  // Product Validation Score - MUST BE DEFINED FIRST
-  const getValidationScore = (product) => {
-    let score = 0;
-    const reasons = [];
-    
-    // Demand check (BSR)
-    if (product.bsr?.rank) {
-      if (product.bsr.rank < 5000) { score += 25; reasons.push('Excellent demand (BSR < 5000)'); }
-      else if (product.bsr.rank < 15000) { score += 20; reasons.push('Good demand (BSR < 15000)'); }
-      else if (product.bsr.rank < 50000) { score += 15; reasons.push('Moderate demand (BSR < 50000)'); }
-      else { score += 5; reasons.push('Lower demand (BSR > 50000)'); }
+  // ============================================================================
+  // ADVANCED SEARCH WITH FILTERS
+  // ============================================================================
+  const searchProducts = async () => {
+    if (!category && !keyword) {
+      setError('Please select a category or enter a keyword');
+      return;
     }
-    
-    // Competition check
-    if (product.competition?.level === 'Low') { score += 25; reasons.push('Low competition'); }
-    else if (product.competition?.level === 'Medium') { score += 15; reasons.push('Medium competition'); }
-    else { score += 5; reasons.push('High competition'); }
-    
-    // Profitability check
-    if (product.price?.margin > 60) { score += 25; reasons.push('High margins (>60%)'); }
-    else if (product.price?.margin > 40) { score += 20; reasons.push('Good margins (>40%)'); }
-    else if (product.price?.margin > 25) { score += 10; reasons.push('Acceptable margins (>25%)'); }
-    
-    // Trend check
-    if (product.bsr?.trend === 'Rising') { score += 15; reasons.push('Rising trend'); }
-    else if (product.bsr?.trend === 'Stable') { score += 10; reasons.push('Stable trend'); }
-    
-    // Reviews check
-    if (product.reviews?.rating >= 4.5) { score += 10; reasons.push('Excellent reviews (4.5+)'); }
-    else if (product.reviews?.rating >= 4.0) { score += 5; reasons.push('Good reviews (4.0+)'); }
-    
-    // Rating
-    let rating = 'Poor';
-    let color = 'red';
-    if (score >= 80) { rating = 'Excellent'; color = 'green'; }
-    else if (score >= 60) { rating = 'Good'; color = 'blue'; }
-    else if (score >= 40) { rating = 'Fair'; color = 'yellow'; }
-    
-    return { score, rating, color, reasons };
-  };
 
-  // V4.0 NEW: Trend Prediction AI
-  const predictTrend = useCallback((product) => {
-    const bsr = product.bsr?.rank || 50000;
-    const reviews = product.reviews?.count || 0;
-    const viral = product.viral?.score || 0;
-    
-    let prediction = 'Stable';
-    let confidence = 50;
-    let bestTimeToLaunch = 'Now';
-    let window = 90; // days
-    
-    // Rising indicators
-    if (viral > 75 && bsr < 10000) {
-      prediction = 'Rising Fast';
-      confidence = 85;
-      bestTimeToLaunch = 'Immediately';
-      window = 30;
-    } else if (bsr < 20000 && reviews < 500) {
-      prediction = 'Rising';
-      confidence = 70;
-      bestTimeToLaunch = 'Within 2 weeks';
-      window = 45;
-    } else if (bsr > 100000 || viral < 30) {
-      prediction = 'Falling';
-      confidence = 60;
-      bestTimeToLaunch = 'Not recommended';
-      window = 0;
-    }
-    
-    return { prediction, confidence, bestTimeToLaunch, window };
-  }, []);
-
-  // V4.0 NEW: Market Saturation Analyzer
-  const analyzeSaturation = useCallback((product) => {
-    const sellers = product.competition?.sellers || 50;
-    const bsr = product.bsr?.rank || 50000;
-    
-    let saturation = 0;
-    let level = 'Low';
-    let recommendation = '';
-    
-    if (sellers < 20 && bsr < 15000) {
-      saturation = 15;
-      level = 'Blue Ocean';
-      recommendation = 'Excellent opportunity! Low competition with high demand.';
-    } else if (sellers < 50 && bsr < 30000) {
-      saturation = 35;
-      level = 'Low';
-      recommendation = 'Good opportunity. Manageable competition.';
-    } else if (sellers < 100) {
-      saturation = 60;
-      level = 'Medium';
-      recommendation = 'Moderate competition. Differentiation needed.';
-    } else {
-      saturation = 85;
-      level = 'High';
-      recommendation = 'Saturated market. Only enter with unique angle.';
-    }
-    
-    return { saturation, level, recommendation };
-  }, []);
-
-  // V4.0 NEW: Launch Success Predictor
-  const predictLaunchSuccess = useCallback((product) => {
-    const validation = getValidationScore(product);
-    const trend = predictTrend(product);
-    const saturation = analyzeSaturation(product);
-    
-    let probability = 50;
-    let risk = 'Medium';
-    let requiredInventory = 100;
-    let timeToProfit = 90; // days
-    
-    // Calculate success probability
-    probability = (
-      (validation.score * 0.4) +
-      (trend.confidence * 0.3) +
-      ((100 - saturation.saturation) * 0.3)
-    );
-    
-    if (probability >= 75) {
-      risk = 'Low';
-      requiredInventory = 150;
-      timeToProfit = 45;
-    } else if (probability >= 60) {
-      risk = 'Medium';
-      requiredInventory = 100;
-      timeToProfit = 60;
-    } else {
-      risk = 'High';
-      requiredInventory = 50;
-      timeToProfit = 120;
-    }
-    
-    return {
-      probability: Math.round(probability),
-      risk,
-      requiredInventory,
-      timeToProfit,
-      recommendedPPC: Math.round(requiredInventory * (product.price?.cost || 10) * 0.3)
-    };
-  }, []);
-
-  // V4.0 NEW: Australian Retail Stock Checker (simulated - would use real APIs in production)
-  const checkAustralianRetail = useCallback(async (productName) => {
-    addDebugLog('info', 'Checking AU retail stock', { productName });
-    
-    // Simulated retail check - in production, would call Target/Kmart/BigW APIs
-    const retailers = [
-      { name: 'Target AU', url: 'https://www.target.com.au' },
-      { name: 'Kmart', url: 'https://www.kmart.com.au' },
-      { name: 'Big W', url: 'https://www.bigw.com.au' }
-    ];
-    
-    const stock = {};
-    
-    retailers.forEach(retailer => {
-      const hasStock = Math.random() > 0.4; // 60% chance of stock
-      const price = hasStock ? (Math.random() * 30 + 10).toFixed(2) : null;
-      const stockLevel = hasStock ? ['High', 'Medium', 'Low'][Math.floor(Math.random() * 3)] : 'Out of Stock';
-      
-      stock[retailer.name] = {
-        available: hasStock,
-        price,
-        stockLevel,
-        trending: hasStock && Math.random() > 0.7, // 30% chance of trending
-        url: retailer.url
-      };
-    });
-    
-    addDebugLog('success', 'AU retail check complete', stock);
-    return stock;
-  }, [addDebugLog]);
-
-  // Enhanced AI Search Function with V4.0 features
-  const scan = useCallback(async (searchQuery = '', categoryData = null) => {
-    if (scanning) return;
-    
-    const startTime = Date.now();
-    setScanning(true);
+    setLoading(true);
     setError('');
     setProducts([]);
-    
-    const cat = categoryData || categories[0];
-    setStatus(`🔍 Searching TikTok, Instagram, Amazon & AU Retail...`);
-    addDebugLog('info', 'Search started', { category: cat.name, query: searchQuery });
-
-    const now = new Date();
-    const currentMonth = now.toLocaleString('en-US', { month: 'long' });
-    const currentYear = now.getFullYear();
+    addDebugLog('🔍 Starting search...', { category, keyword, filters });
 
     try {
-      addDebugLog('info', 'Calling AI API...', { model: 'perplexity-sonar-online' });
-      
-      const res = await fetch('/api/search', {
+      const response = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `Find 8 trending ${cat.name.replace(/🔥|🍳|🏠|🧹|💄|📱|🐕|💪|👕|👶|🌱|🎮|🎧|📷|🏋️|🎨|📚|🚗|🎒/g, '').trim()} products ${searchQuery || ''} on Amazon/TikTok (${currentMonth} ${currentYear}).
-
-Search: Amazon BSR, TikTok viral, AU retail (Target/Kmart).
-Data needed: Real ASINs, current BSR, reviews 500+, viral metrics.
-
-JSON only: [{"name":"Product Name","category":"${cat.name}","emoji":"📦","desc":"trending reason","asin":"B08XXX","price":{"cost":8,"sell":25,"margin":68,"roi":213},"bsr":{"rank":3500,"category":"Category","monthlySales":600},"reviews":{"count":850,"rating":4.4},"competition":{"sellers":42,"level":"Medium"},"viral":{"score":84,"platform":"TikTok","reason":"why viral","views":"3.2M"},"trend":{"direction":"Rising","velocity":"Fast"},"suppliers":{"alibaba":7.5,"cj":8.2},"profitability":{"breakeven":35,"monthly":2100,"yearly":25200}}]`,
-          category: cat.name,
-          searchQuery: searchQuery
+          category,
+          keyword,
+          filters,
+          timestamp: Date.now()
         })
       });
 
-      addDebugLog('success', 'API response received', { status: res.status });
+      const data = await response.json();
+      addDebugLog('📦 Response received', data);
 
-      const data = await res.json();
-      
       if (data.error) {
-        addDebugLog('error', 'API returned error', data.error);
-        // Show user-friendly error message
-        const errorMsg = data.error.includes('API') ? 
-          'AI service issue - check your Perplexity API key in Vercel settings' :
-          data.error;
-        throw new Error(errorMsg);
-      }
-      
-      // Perplexity returns data in data.data
-      let txt = data.data || '';
-      
-      if (data.searchEnabled) {
-        addDebugLog('success', 'Web search was enabled', { cached: data.cached });
-      }
-
-      addDebugLog('info', 'Extracted response text', { length: txt.length, preview: txt.substring(0, 150) });
-
-      let productArray = null;
-      
-      const startIdx = txt.indexOf('[');
-      const endIdx = txt.lastIndexOf(']');
-      
-      addDebugLog('info', 'JSON search', { startIdx, endIdx, found: startIdx !== -1 && endIdx !== -1 });
-      
-      if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
-        const jsonStr = txt.substring(startIdx, endIdx + 1);
+        setError(data.error);
+        addDebugLog('❌ Error in response', { error: data.error });
+      } else if (data.products && data.products.length > 0) {
+        setProducts(data.products);
+        addDebugLog('✅ Products loaded', { count: data.products.length });
         
-        try {
-          productArray = JSON.parse(jsonStr);
-          addDebugLog('success', 'JSON parsed successfully', { count: productArray?.length });
-          
-          if (!Array.isArray(productArray) || productArray.length === 0 || !productArray[0].name) {
-            addDebugLog('warning', 'Invalid product array structure');
-            productArray = null;
-          }
-        } catch (e) {
-          addDebugLog('error', 'JSON parse failed', e.message);
-        }
+        // Load price/BSR history for products
+        loadProductHistory(data.products);
       } else {
-        addDebugLog('error', 'No JSON array found in response');
-      }
-
-      if (productArray && productArray.length > 0) {
-        const prods = productArray.map((p, i) => ({
-          ...p,
-          id: `p-${Date.now()}-${i}`,
-          price: p.price || { cost: 10, sell: 30, margin: 67, roi: 200 },
-          viral: p.viral || { score: 75, platform: 'TikTok' },
-          market: p.market || { urgency: 'Medium' },
-          bsr: p.bsr || { rank: 25000 },
-          reviews: p.reviews || { count: 0, rating: 0 },
-          competition: p.competition || { level: 'Medium', sellers: 50 },
-          trend: p.trend || { direction: 'Stable' },
-        }));
-        
-        const endTime = Date.now();
-        const duration = ((endTime - startTime) / 1000).toFixed(1);
-        
-        setProducts(prods);
-        
-        // Update dashboard stats
-        setDashboardStats(prev => ({
-          totalSearches: prev.totalSearches + 1,
-          productsFound: prev.productsFound + prods.length,
-          avgValidationScore: Math.round(prods.reduce((sum, p) => sum + getValidationScore(p).score, 0) / prods.length),
-          topCategory: cat.name
-        }));
-        
-        addDebugLog('success', `Found ${prods.length} products in ${duration}s`, { duration, count: prods.length });
-        notify(`Found ${prods.length} products!`);
-      } else {
-        addDebugLog('error', 'No valid products in response');
-        throw new Error('AI returned no products. Try different category or search term.');
+        setError('No products found. Try different keywords or category.');
+        addDebugLog('⚠️ No products returned');
       }
     } catch (err) {
-      addDebugLog('error', 'Search failed', err.message);
-      setError(err.message || 'Search failed - check debug panel');
-      notify(err.message?.substring(0, 50) || 'Search failed', 'err');
+      console.error('Search error:', err);
+      setError('Search failed. Please try again.');
+      addDebugLog('💥 Fetch error', { error: err.message });
     } finally {
-      setScanning(false);
-      setStatus('');
+      setLoading(false);
     }
-  }, [scanning, categories, notify, addDebugLog, getValidationScore]);
+  };
 
-  // Add competitor
-  const addCompetitor = useCallback(() => {
-    if (!newAsin.trim()) return;
-    const comp = {
-      id: Date.now(),
-      asin: newAsin.trim(),
-      name: `Product ${newAsin.substring(0, 8)}`,
-      addedDate: new Date().toLocaleDateString(),
-      price: (Math.random() * 30 + 10).toFixed(2),
-      bsr: Math.floor(Math.random() * 50000 + 1000),
-      reviews: Math.floor(Math.random() * 2000 + 100),
-      rating: (Math.random() * 1 + 4).toFixed(1),
-    };
-    setCompetitors(prev => [comp, ...prev]);
-    setNewAsin('');
-    addDebugLog('success', 'Competitor added', { asin: comp.asin });
-    notify('Competitor added!');
-  }, [newAsin, notify, addDebugLog]);
+  // ============================================================================
+  // PRICE & BSR HISTORY TRACKING
+  // ============================================================================
+  const loadProductHistory = async (productList) => {
+    try {
+      const asins = productList.map(p => p.asin).filter(Boolean);
+      if (asins.length === 0) return;
 
-  const removeCompetitor = useCallback((id) => {
-    setCompetitors(prev => prev.filter(c => c.id !== id));
-    addDebugLog('info', 'Competitor removed');
-    notify('Competitor removed');
-  }, [notify, addDebugLog]);
+      const response = await fetch('/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ asins })
+      });
 
-  // Toggle save/bundle
-  const toggleSave = useCallback((p) => {
-    setSaved(prev => {
-      const exists = prev.find(s => s.id === p.id);
-      if (exists) {
-        addDebugLog('info', 'Product unsaved', { name: p.name });
-        return prev.filter(s => s.id !== p.id);
-      } else {
-        addDebugLog('success', 'Product saved', { name: p.name });
-        return [...prev, p];
-      }
-    });
-  }, [addDebugLog]);
-
-  const isSaved = useCallback((id) => saved.some(s => s.id === id), [saved]);
-
-  const toggleBundle = useCallback((p) => {
-    setBundles(prev => {
-      const exists = prev.find(b => b.id === p.id);
-      if (exists) {
-        addDebugLog('info', 'Product removed from bundle', { name: p.name });
-        return prev.filter(b => b.id !== p.id);
-      } else {
-        addDebugLog('success', 'Product added to bundle', { name: p.name });
-        return [...prev, p];
-      }
-    });
-  }, [addDebugLog]);
-
-  const inBundle = useCallback((id) => bundles.some(b => b.id === id), [bundles]);
-
-  const saveCurrentBundle = useCallback(() => {
-    if (bundles.length === 0) {
-      notify('Add products to bundle first!', 'err');
-      return;
+      const data = await response.json();
+      if (data.priceHistory) setPriceHistory(data.priceHistory);
+      if (data.bsrHistory) setBsrHistory(data.bsrHistory);
+      
+      addDebugLog('📊 History loaded', { 
+        priceCount: Object.keys(data.priceHistory || {}).length,
+        bsrCount: Object.keys(data.bsrHistory || {}).length
+      });
+    } catch (err) {
+      console.error('History load error:', err);
+      addDebugLog('⚠️ History load failed', { error: err.message });
     }
-    const name = bundleName.trim() || `Bundle ${savedBundles.length + 1}`;
-    const newBundle = {
-      id: Date.now(),
-      name,
-      products: [...bundles],
-      created: new Date().toLocaleDateString(),
-      totalCost: bundles.reduce((sum, p) => sum + (p.price?.cost || 0), 0),
-      bundlePrice: bundles.reduce((sum, p) => sum + (p.price?.sell || 0), 0) * 0.8,
-    };
-    setSavedBundles(prev => [...prev, newBundle]);
-    setBundles([]);
-    setBundleName('');
-    addDebugLog('success', 'Bundle saved', { name, items: bundles.length });
-    notify(`Bundle "${name}" saved!`);
-  }, [bundles, bundleName, savedBundles.length, notify, addDebugLog]);
+  };
 
-  const deleteSavedBundle = useCallback((id) => {
-    setSavedBundles(prev => prev.filter(b => b.id !== id));
-    addDebugLog('info', 'Bundle deleted');
-    notify('Bundle deleted');
-  }, [notify, addDebugLog]);
+  // ============================================================================
+  // SAVE/TRACK PRODUCTS
+  // ============================================================================
+  const saveProduct = async (product) => {
+    try {
+      setSavedProducts(prev => [...prev, product]);
+      addDebugLog('💾 Product saved', { asin: product.asin });
+      
+      // Could save to Supabase here
+      const response = await fetch('/api/save-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      });
+      
+      if (response.ok) {
+        alert('Product saved successfully! 🎉');
+      }
+    } catch (err) {
+      console.error('Save error:', err);
+      alert('Failed to save product');
+    }
+  };
 
-  const loadBundle = useCallback((bundle) => {
-    setBundles(bundle.products);
-    addDebugLog('success', 'Bundle loaded', { name: bundle.name });
-    notify(`Loaded "${bundle.name}"`);
-  }, [notify, addDebugLog]);
+  // ============================================================================
+  // COMPETITOR MONITORING
+  // ============================================================================
+  const addCompetitor = async (asin) => {
+    try {
+      const response = await fetch('/api/competitors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ asin, action: 'add' })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setCompetitors(prev => [...prev, data.competitor]);
+        alert('Competitor added! You\'ll get alerts on price changes. 📊');
+      }
+    } catch (err) {
+      console.error('Competitor add error:', err);
+      alert('Failed to add competitor');
+    }
+  };
 
-  // Export functions
-  const exportCSV = useCallback(() => {
-    const csv = [
-      ['Name', 'Category', 'Cost', 'Sell', 'Margin', 'ROI', 'BSR', 'Reviews', 'Competition', 'Score'].join(','),
-      ...products.map(p => {
-        const validation = getValidationScore(p);
-        return [
-          p.name,
-          p.category,
-          p.price?.cost || 0,
-          p.price?.sell || 0,
-          p.price?.margin || 0,
-          p.price?.roi || 0,
-          p.bsr?.rank || 'N/A',
-          p.reviews?.count || 0,
-          p.competition?.level || 'N/A',
-          validation.score
-        ].join(',');
-      })
-    ].join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ark-products-v4-${Date.now()}.csv`;
-    a.click();
-    addDebugLog('success', 'CSV exported', { products: products.length });
-    notify('CSV exported!');
-  }, [products, notify, addDebugLog]);
+  // ============================================================================
+  // EMAIL ALERTS
+  // ============================================================================
+  const setupAlert = async (product, alertType, threshold) => {
+    try {
+      const response = await fetch('/api/alerts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          asin: product.asin,
+          alertType, // 'price_drop', 'bsr_change', 'stock_alert'
+          threshold,
+          email: 'your-email@example.com' // Could get from user profile
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setAlerts(prev => [...prev, data.alert]);
+        alert(`Alert set! You'll get notified when ${alertType} reaches ${threshold} 🔔`);
+      }
+    } catch (err) {
+      console.error('Alert setup error:', err);
+      alert('Failed to setup alert');
+    }
+  };
 
-  // V4.0 Export debug logs
-  const exportDebugLogs = useCallback(() => {
-    const logsText = debugLogs.map(log => 
-      `[${log.timestamp}] [${log.type.toUpperCase()}] ${log.message}${log.data ? '\n  Data: ' + JSON.stringify(log.data, null, 2) : ''}`
-    ).join('\n\n');
-    
-    const blob = new Blob([logsText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ark-debug-logs-${Date.now()}.txt`;
-    a.click();
-    notify('Debug logs exported!');
-  }, [debugLogs, notify]);
-
-  // ========== V4.3 PHASE 2 LITE FEATURES ==========
-  
-  // Simple Bundle AI - finds complementary products
-  const suggestBundles = useCallback(() => {
+  // ============================================================================
+  // BUNDLE AI SUGGESTER (Enhanced)
+  // ============================================================================
+  const generateBundleAI = async () => {
     if (products.length < 2) {
-      notify('Need at least 2 products to suggest bundles!', 'err');
+      alert('Need at least 2 products to create a bundle!');
+      return;
+    }
+
+    setShowBundleAI(true);
+    setBundleSuggestion('🤖 AI is analyzing products...');
+
+    try {
+      const productDescriptions = products
+        .slice(0, 5)
+        .map(p => `${p.title} ($${p.price})`)
+        .join(', ');
+
+      const response = await fetch('/api/bundle-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          products: products.slice(0, 5),
+          category
+        })
+      });
+
+      const data = await response.json();
+      setBundleSuggestion(data.suggestion || 'Could not generate bundle suggestion');
+    } catch (err) {
+      console.error('Bundle AI error:', err);
+      setBundleSuggestion('Error generating bundle. Try again!');
+    }
+  };
+
+  // ============================================================================
+  // CHART VISUALIZATION
+  // ============================================================================
+  const showPriceChart = (product) => {
+    const history = priceHistory[product.asin];
+    if (!history || history.length === 0) {
+      alert('No price history available for this product yet!');
       return;
     }
     
-    const suggestions = [];
-    
-    // Simple algorithm: match by category and price range
-    for (let i = 0; i < products.length && suggestions.length < 5; i++) {
-      for (let j = i + 1; j < products.length && suggestions.length < 5; j++) {
-        const p1 = products[i];
-        const p2 = products[j];
-        
-        // Check if compatible
-        const sameCat = p1.category === p2.category;
-        const priceMatch = Math.abs((p1.price?.sell || 0) - (p2.price?.sell || 0)) < 15;
-        const validation1 = getValidationScore(p1);
-        const validation2 = getValidationScore(p2);
-        const bothGood = validation1.score >= 60 && validation2.score >= 60;
-        
-        if (sameCat && priceMatch && bothGood) {
-          const bundleCost = (p1.price?.cost || 0) + (p2.price?.cost || 0);
-          const bundlePrice = ((p1.price?.sell || 0) + (p2.price?.sell || 0)) * 0.85;
-          const profit = bundlePrice - bundleCost;
-          const margin = ((profit / bundlePrice) * 100).toFixed(1);
-          
-          suggestions.push({
-            id: `bundle-${i}-${j}`,
-            products: [p1, p2],
-            bundleCost: bundleCost.toFixed(2),
-            bundlePrice: bundlePrice.toFixed(2),
-            profit: profit.toFixed(2),
-            margin,
-            score: Math.min(validation1.score, validation2.score)
-          });
-        }
-      }
+    setSelectedChart({ type: 'price', product, data: history });
+    setShowCharts(true);
+  };
+
+  const showBSRChart = (product) => {
+    const history = bsrHistory[product.asin];
+    if (!history || history.length === 0) {
+      alert('No BSR history available for this product yet!');
+      return;
     }
     
-    setBundleSuggestions(suggestions);
-    setShowBundleAI(true);
-    addDebugLog('success', 'Bundle AI generated suggestions', { count: suggestions.length });
-    notify(`Found ${suggestions.length} bundle opportunities!`);
-  }, [products, notify, addDebugLog]);
+    setSelectedChart({ type: 'bsr', product, data: history });
+    setShowCharts(true);
+  };
 
-  // Login screen
-  if (!auth) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 rounded-3xl shadow-2xl mb-6 animate-pulse">
-              <Icon name="brain" size={48} className="text-white" />
-            </div>
-            <h1 className="text-4xl font-black text-white mb-2">Ark Bundle Hub</h1>
-            <p className="text-orange-300 font-bold">V5.1 Final - Production Ready!</p>
-            <p className="text-orange-400 text-sm mt-2">🔍 Real-Time Product Research • 17 Categories • Web Search Enabled</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/20">
-            <div className="space-y-4">
-              <div className="relative">
-                <Icon name="lock" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type={showPw ? 'text' : 'password'}
-                  value={pw}
-                  onChange={e => setPw(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && pw === ADMIN_PASSWORD && setAuth(true)}
-                  className="w-full pl-12 pr-12 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400"
-                  placeholder="Enter password"
-                />
-                <button onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
-                  <Icon name={showPw ? 'eyeOff' : 'eye'} size={20} />
-                </button>
-              </div>
-              <button
-                onClick={() => pw === ADMIN_PASSWORD ? setAuth(true) : notify('Invalid password', 'err')}
-                className="w-full py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white font-bold rounded-xl text-lg"
-              >
-                Access ARK Scanner
-              </button>
-            </div>
-          </div>
-          <div className="mt-6 text-center text-orange-300 text-sm">
-            <p className="mb-2">✨ V5.1 Final Features:</p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-white/5 rounded-lg p-2">🔍 Web Search</div>
-              <div className="bg-white/5 rounded-lg p-2">📊 17 Categories</div>
-              <div className="bg-white/5 rounded-lg p-2">🎯 Bundle AI</div>
-              <div className="bg-white/5 rounded-lg p-2">⚡ Optimized</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // ============================================================================
+  // UTILITY FUNCTIONS
+  // ============================================================================
+  const addDebugLog = (message, data = null) => {
+    const log = {
+      time: new Date().toLocaleTimeString(),
+      message,
+      data
+    };
+    setDebugLogs(prev => [log, ...prev].slice(0, 50));
+  };
 
-  const calcResults = calculateFBA();
+  const calculateProfit = useCallback((product) => {
+    const amazonPrice = parseFloat(product.price) || 0;
+    const supplierCost = parseFloat(product.supplier_price) || 0;
+    const fbaFee = amazonPrice * 0.15; // 15% FBA fee
+    const profit = amazonPrice - supplierCost - fbaFee;
+    const margin = amazonPrice > 0 ? ((profit / amazonPrice) * 100).toFixed(1) : 0;
+    const roi = supplierCost > 0 ? ((profit / supplierCost) * 100).toFixed(1) : 0;
 
-  // Main Dashboard
+    return {
+      profit: profit.toFixed(2),
+      margin: `${margin}%`,
+      roi: `${roi}%`,
+      monthly: (profit * 30).toFixed(2),
+      yearly: (profit * 365).toFixed(2)
+    };
+  }, []);
+
+  const formatBSR = (bsr) => {
+    if (!bsr) return 'N/A';
+    return parseInt(bsr).toLocaleString();
+  };
+
+  // ============================================================================
+  // FILTERED & SORTED PRODUCTS
+  // ============================================================================
+  const filteredProducts = useMemo(() => {
+    let filtered = [...products];
+
+    // Apply filters
+    if (filters.minPrice) {
+      filtered = filtered.filter(p => parseFloat(p.price) >= parseFloat(filters.minPrice));
+    }
+    if (filters.maxPrice) {
+      filtered = filtered.filter(p => parseFloat(p.price) <= parseFloat(filters.maxPrice));
+    }
+    if (filters.minMargin) {
+      filtered = filtered.filter(p => {
+        const calc = calculateProfit(p);
+        return parseFloat(calc.margin) >= parseFloat(filters.minMargin);
+      });
+    }
+    if (filters.maxBSR) {
+      filtered = filtered.filter(p => {
+        const bsr = parseInt(p.bsr) || 999999;
+        return bsr <= parseInt(filters.maxBSR);
+      });
+    }
+    if (filters.minReviews) {
+      filtered = filtered.filter(p => {
+        const reviews = parseInt(p.reviews) || 0;
+        return reviews >= parseInt(filters.minReviews);
+      });
+    }
+    if (filters.minRating) {
+      filtered = filtered.filter(p => {
+        const rating = parseFloat(p.rating) || 0;
+        return rating >= parseFloat(filters.minRating);
+      });
+    }
+
+    // Sort products
+    filtered.sort((a, b) => {
+      const calcA = calculateProfit(a);
+      const calcB = calculateProfit(b);
+
+      switch (filters.sortBy) {
+        case 'profit':
+          return parseFloat(calcB.profit) - parseFloat(calcA.profit);
+        case 'margin':
+          return parseFloat(calcB.margin) - parseFloat(calcA.margin);
+        case 'bsr':
+          return (parseInt(a.bsr) || 999999) - (parseInt(b.bsr) || 999999);
+        case 'reviews':
+          return (parseInt(b.reviews) || 0) - (parseInt(a.reviews) || 0);
+        case 'rating':
+          return (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [products, filters, calculateProfit]);
+
+  // ============================================================================
+  // RENDER
+  // ============================================================================
   return (
-    <div className="min-h-screen bg-slate-100">
-      {notif && (
-        <div className={`fixed top-4 right-4 z-50 px-5 py-3 rounded-xl shadow-xl flex items-center gap-2 text-white ${notif.t === 'err' ? 'bg-red-500' : 'bg-green-500'}`}>
-          <Icon name="check" size={20} />
-          {notif.m}
-          <button onClick={() => setNotif(null)}><Icon name="x" size={18} /></button>
-        </div>
-      )}
-
-      {/* V4.0 Debug Panel Toggle Button */}
-      <button
-        onClick={() => setShowDebug(!showDebug)}
-        className="fixed bottom-4 right-4 z-50 p-4 bg-slate-800 text-white rounded-full shadow-2xl hover:bg-slate-700 transition-all hover:scale-110"
-        title="Toggle Debug Panel"
-      >
-        <Icon name={showDebug ? 'code' : 'bug'} size={24} />
-      </button>
-
-      {/* V4.0 Debug Panel */}
-      {showDebug && (
-        <div className="fixed bottom-20 right-4 w-96 max-h-96 bg-slate-900 text-white rounded-2xl shadow-2xl z-40 overflow-hidden flex flex-col animate-slide-in">
-          <div className="p-4 bg-slate-800 flex items-center justify-between border-b border-slate-700">
-            <div className="flex items-center gap-2">
-              <Icon name="bug" size={20} className="text-green-400" />
-              <h3 className="font-bold">Debug Panel</h3>
-              <span className="text-xs text-slate-400">({debugLogs.length} logs)</span>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={exportDebugLogs} className="p-2 hover:bg-slate-700 rounded transition-all" title="Export logs">
-                <Icon name="download" size={16} />
-              </button>
-              <button onClick={() => setDebugLogs([])} className="p-2 hover:bg-slate-700 rounded transition-all" title="Clear logs">
-                <Icon name="x" size={16} />
-              </button>
-            </div>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-2 text-xs font-mono">
-            {debugLogs.length === 0 ? (
-              <div className="text-slate-500 text-center py-8">No logs yet. Start searching!</div>
-            ) : (
-              debugLogs.map(log => (
-                <div key={log.id} className={`p-2 rounded transition-all ${
-                  log.type === 'error' ? 'bg-red-900/50 border-l-2 border-red-500' :
-                  log.type === 'success' ? 'bg-green-900/50 border-l-2 border-green-500' :
-                  log.type === 'warning' ? 'bg-yellow-900/50 border-l-2 border-yellow-500' :
-                  'bg-slate-800/50 border-l-2 border-blue-500'
-                }`}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-slate-400">{log.timestamp}</span>
-                    <span className={`font-bold text-xs ${
-                      log.type === 'error' ? 'text-red-400' :
-                      log.type === 'success' ? 'text-green-400' :
-                      log.type === 'warning' ? 'text-yellow-400' :
-                      'text-blue-400'
-                    }`}>{log.type.toUpperCase()}</span>
-                  </div>
-                  <div className="text-white text-xs">{log.message}</div>
-                  {log.data && (
-                    <details className="mt-1">
-                      <summary className="text-slate-400 text-xs cursor-pointer hover:text-slate-300">View data</summary>
-                      <div className="mt-1 text-slate-400 text-xs overflow-x-auto bg-slate-950 p-2 rounded">
-                        <pre>{JSON.stringify(log.data, null, 2)}</pre>
-                      </div>
-                    </details>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="bg-gradient-to-r from-black via-gray-900 to-gray-800 text-white sticky top-0 z-40 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
+      <header className="border-b border-gray-800 bg-gradient-to-r from-orange-600 to-orange-500">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white px-5 py-2 rounded-xl font-black text-xl shadow-lg">
-                <Icon name="brain" size={28} /> ARK
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-3 rounded-lg shadow-lg">
+                <span className="text-2xl font-bold text-white">ARK</span>
               </div>
               <div>
-                <p className="font-bold text-lg">ARK Bundle Scanner</p>
-                <p className="text-sm text-orange-300">🇦🇺 AU Retail • AI Predictions • V5.1 Final</p>
+                <h1 className="text-3xl font-bold text-white">Bundle Scanner V6.0</h1>
+                <p className="text-orange-100 text-sm">The Beast - 50+ Categories • Advanced Filters • Real-time Tracking</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right text-xs">
-                <div className="text-orange-300">Searches: {dashboardStats.totalSearches}</div>
-                <div className="text-orange-300">Found: {dashboardStats.productsFound}</div>
-              </div>
-              <button onClick={() => setAuth(false)} className="p-3 rounded-xl bg-white/10 hover:bg-red-500 transition-all">
-                <Icon name="lock" size={20} />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowDebug(!showDebug)}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition text-sm"
+              >
+                {showDebug ? '🔍 Hide Debug' : '🔍 Debug'}
+              </button>
+              <button
+                onClick={() => setShowCompetitors(!showCompetitors)}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition text-sm"
+              >
+                📊 Competitors ({competitors.length})
+              </button>
+              <button
+                onClick={() => setShowAlerts(!showAlerts)}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition text-sm"
+              >
+                🔔 Alerts ({alerts.length})
               </button>
             </div>
-          </div>
-
-          {/* Main Navigation */}
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            <button onClick={() => setActiveTab('discover')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'discover' ? 'bg-amber-500 text-white' : 'bg-white/10 text-white/80'}`}>
-              <Icon name="search" size={18} /> Discover
-            </button>
-            <button onClick={() => setActiveTab('calculator')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'calculator' ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/80'}`}>
-              <Icon name="calculator" size={18} /> Profit Calc
-            </button>
-            <button onClick={() => setActiveTab('competitors')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'competitors' ? 'bg-red-500 text-white' : 'bg-white/10 text-white/80'}`}>
-              <Icon name="target" size={18} /> Competitors
-            </button>
-            <button onClick={() => setActiveTab('saved')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'saved' ? 'bg-orange-500 text-white' : 'bg-white/10 text-white/80'}`}>
-              <Icon name="bookmark" size={18} /> Saved ({saved.length})
-            </button>
-            <button onClick={() => setActiveTab('bundles')} className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap flex items-center gap-2 ${activeTab === 'bundles' ? 'bg-green-500 text-white' : 'bg-white/10 text-white/80'}`}>
-              <Icon name="layers" size={18} /> Bundles ({savedBundles.length})
-            </button>
           </div>
         </div>
       </header>
 
-      {status && (
-        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 px-4 font-medium flex items-center gap-3 justify-center shadow-lg animate-pulse">
-          <Icon name="loader" size={20} className="animate-spin" />
-          <span>{status}</span>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        {/* DISCOVER TAB */}
-        {activeTab === 'discover' && (
-          <div>
-            {/* Search Bar */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
-              <div className="flex gap-3">
-                <div className="flex-1 relative">
-                  <Icon name="search" size={22} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && scan(searchTerm)}
-                    placeholder="Search for products..."
-                    className="w-full pl-14 pr-4 py-4 rounded-xl bg-slate-50 text-slate-800 placeholder-slate-400 border-2 border-slate-200 focus:border-amber-500 outline-none"
-                  />
-                </div>
+      <div className="container mx-auto px-4 py-8">
+        {/* Search Section */}
+        <div className="bg-gray-900 rounded-xl p-6 mb-8 shadow-2xl border border-gray-800">
+          <h2 className="text-2xl font-bold mb-6 text-orange-400">🔍 Product Search</h2>
+          
+          {/* Category Selection */}
+          <div className="mb-6">
+            <label className="block text-sm font-semibold mb-3 text-gray-300">
+              Select Category ({categories.length} available)
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 max-h-96 overflow-y-auto p-2 bg-black rounded-lg border border-gray-800">
+              {categories.map((cat) => (
                 <button
-                  onClick={() => scan(searchTerm)}
-                  disabled={scanning}
-                  className="px-10 py-4 bg-gradient-to-r from-amber-400 to-red-500 text-white font-bold rounded-xl disabled:opacity-50 flex items-center gap-3"
+                  key={cat.id}
+                  onClick={() => {
+                    setCategory(cat.id);
+                    setKeyword('');
+                  }}
+                  className={`p-4 rounded-lg transition-all duration-200 text-left ${
+                    category === cat.id
+                      ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg scale-105'
+                      : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                  }`}
                 >
-                  {scanning ? <Icon name="loader" size={24} className="animate-spin" /> : <Icon name="search" size={24} />}
-                  {scanning ? 'Searching...' : 'Search'}
+                  <div className="text-2xl mb-2">{cat.icon}</div>
+                  <div className="font-semibold text-sm mb-1">{cat.name}</div>
+                  <div className="text-xs opacity-75">{cat.description}</div>
                 </button>
-              </div>
-            </div>
-
-            {/* Categories */}
-            <div className="bg-white rounded-2xl p-4 shadow-lg mb-6">
-              <div className="flex gap-2 overflow-x-auto">
-                {categories.map(c => (
-                  <button
-                    key={c.id}
-                    onClick={() => { setSelectedCategory(c.id); scan('', c); }}
-                    disabled={scanning}
-                    className={`px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap ${selectedCategory === c.id ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-                  >
-                    {c.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* V4.3 Bundle AI Button */}
-            {products.length >= 2 && (
-              <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-4 shadow-lg mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Icon name="brain" size={32} className="text-white" />
-                    <div>
-                      <h3 className="text-white font-bold text-lg">Bundle AI Suggester</h3>
-                      <p className="text-orange-100 text-sm">Find profitable 2-pack combinations</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={suggestBundles}
-                    className="px-6 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-orange-50 transition-all flex items-center gap-2"
-                  >
-                    <Icon name="sparkles" size={20} />
-                    Suggest Bundles
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {error && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 text-red-700">
-                <div className="flex items-center gap-2">
-                  <Icon name="alert" size={20} />
-                  {error}
-                </div>
-              </div>
-            )}
-
-            {/* Products Grid */}
-            {products.length === 0 && !scanning && !error && (
-              <div className="text-center py-20">
-                <Icon name="gift" size={64} className="mx-auto text-amber-400 mb-4" />
-                <p className="text-slate-500 text-lg">Select a category or search to find products</p>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map(p => {
-                const validation = getValidationScore(p);
-                const isExpanded = expanded === p.id;
-                return (
-                  <div key={p.id} className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    {/* Validation Score Bar */}
-                    <div className={`h-2 bg-gradient-to-r ${validation.color === 'green' ? 'from-green-500 to-emerald-500' : validation.color === 'blue' ? 'from-blue-500 to-cyan-500' : validation.color === 'yellow' ? 'from-yellow-500 to-orange-500' : 'from-red-500 to-rose-500'}`} />
-                    
-                    <div className="p-5">
-                      {/* Header */}
-                      <div className="flex justify-between items-start gap-3 mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2 flex-wrap">
-                            <span className="text-3xl">{p.emoji || '📦'}</span>
-                            <span className="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full">{p.category}</span>
-                            {/* V4.0 Trend Arrow */}
-                            {p.trend?.direction && (
-                              <span className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full font-bold ${
-                                p.trend.direction === 'Rising' ? 'bg-green-100 text-green-700' :
-                                p.trend.direction === 'Falling' ? 'bg-red-100 text-red-700' :
-                                'bg-blue-100 text-blue-700'
-                              }`}>
-                                {p.trend.direction === 'Rising' ? '↗️' : p.trend.direction === 'Falling' ? '↘️' : '→'} 
-                                {p.trend.direction}
-                              </span>
-                            )}
-                          </div>
-                          <h3 className="font-bold text-slate-800 text-lg mb-1">{p.name}</h3>
-                          {p.asin && <p className="text-xs text-slate-500">ASIN: {p.asin}</p>}
-                        </div>
-                        <div className="text-center">
-                          <div className={`text-2xl font-black ${validation.color === 'green' ? 'text-green-600' : validation.color === 'blue' ? 'text-blue-600' : validation.color === 'yellow' ? 'text-yellow-600' : 'text-red-600'}`}>
-                            {validation.score}
-                          </div>
-                          <div className="text-xs text-slate-500">{validation.rating}</div>
-                        </div>
-                      </div>
-
-                      <p className="text-slate-600 text-sm mb-4">{p.desc}</p>
-
-                      {/* V4.0 Quick Stats with Trend & Success Prediction */}
-                      <div className="grid grid-cols-2 gap-2 mb-4">
-                        <div className="bg-blue-50 p-3 rounded-xl">
-                          <div className="text-xs text-slate-500">BSR Rank</div>
-                          <div className="font-bold text-blue-700">#{(p.bsr?.rank || 0).toLocaleString()}</div>
-                        </div>
-                        <div className="bg-green-50 p-3 rounded-xl">
-                          <div className="text-xs text-slate-500">Margin</div>
-                          <div className="font-bold text-green-700">{p.price?.margin || 0}%</div>
-                        </div>
-                      </div>
-
-                      {/* Expandable Details */}
-                      {isExpanded && (
-                        <div className="mb-4 space-y-3 border-t-2 border-slate-100 pt-4">
-                          {/* Pricing Grid */}
-                          <div className="bg-slate-50 rounded-xl p-4">
-                            <h4 className="font-bold text-slate-700 mb-3 text-sm">💰 Pricing Breakdown</h4>
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                              <div>
-                                <span className="text-slate-500">Cost:</span>
-                                <span className="font-bold text-slate-800 ml-2">${p.price?.cost || 0}</span>
-                              </div>
-                              <div>
-                                <span className="text-slate-500">Sell:</span>
-                                <span className="font-bold text-green-600 ml-2">${p.price?.sell || 0}</span>
-                              </div>
-                              <div>
-                                <span className="text-slate-500">Margin:</span>
-                                <span className="font-bold text-blue-600 ml-2">{p.price?.margin || 0}%</span>
-                              </div>
-                              <div>
-                                <span className="text-slate-500">ROI:</span>
-                                <span className="font-bold text-orange-600 ml-2">{p.price?.roi || 0}%</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Competition & Reviews */}
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-orange-50 rounded-xl p-3">
-                              <div className="text-xs text-slate-500">Competition</div>
-                              <div className={`font-bold text-sm ${p.competition?.level === 'Low' ? 'text-green-600' : p.competition?.level === 'Medium' ? 'text-orange-600' : 'text-red-600'}`}>
-                                {p.competition?.level || 'N/A'}
-                              </div>
-                              <div className="text-xs text-slate-500">{p.competition?.sellers || 0} sellers</div>
-                            </div>
-                            <div className="bg-yellow-50 rounded-xl p-3">
-                              <div className="text-xs text-slate-500">Reviews</div>
-                              <div className="font-bold text-sm text-yellow-700">⭐ {p.reviews?.rating || 'N/A'}</div>
-                              <div className="text-xs text-slate-500">{(p.reviews?.count || 0).toLocaleString()} reviews</div>
-                            </div>
-                          </div>
-
-                          {/* Suppliers */}
-                          {(p.suppliers?.aliexpress || p.suppliers?.alibaba || p.suppliers?.cj) && (
-                            <div className="bg-orange-50 rounded-xl p-3">
-                              <h4 className="font-bold text-orange-700 mb-2 text-sm">🏭 Suppliers</h4>
-                              <div className="space-y-2 text-xs">
-                                {p.suppliers?.aliexpress && (
-                                  <div className="flex items-center justify-between bg-white rounded p-2">
-                                    <div>
-                                      <span className="text-slate-600">AliExpress:</span>
-                                      <span className="font-bold text-orange-600 ml-1">${p.suppliers.aliexpress}</span>
-                                    </div>
-                                    {p.aliexpress && (
-                                      <a href={p.aliexpress} target="_blank" rel="noopener noreferrer" 
-                                         className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-xs font-bold">
-                                        View Suppliers →
-                                      </a>
-                                    )}
-                                  </div>
-                                )}
-                                <div className="grid grid-cols-2 gap-2">
-                                  {p.suppliers?.alibaba && (
-                                    <div>
-                                      <span className="text-slate-600">Alibaba:</span>
-                                      <span className="font-bold text-orange-600 ml-1">${p.suppliers.alibaba}</span>
-                                    </div>
-                                  )}
-                                  {p.suppliers?.cj && (
-                                    <div>
-                                      <span className="text-slate-600">CJ:</span>
-                                      <span className="font-bold text-orange-600 ml-1">${p.suppliers.cj}</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Profitability */}
-                          {p.profitability && (
-                            <div className="bg-green-50 rounded-xl p-3">
-                              <h4 className="font-bold text-green-700 mb-2 text-sm">📊 Profit Potential</h4>
-                              <div className="space-y-1 text-xs">
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Break-even:</span>
-                                  <span className="font-bold">{p.profitability.breakeven} units</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Monthly:</span>
-                                  <span className="font-bold text-green-600">${p.profitability.monthly?.toLocaleString()}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-slate-600">Yearly:</span>
-                                  <span className="font-bold text-green-700">${p.profitability.yearly?.toLocaleString()}</span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Quick Links */}
-                          <div className="flex gap-2">
-                            {p.asin && (
-                              <a href={`https://amazon.com/dp/${p.asin}`} target="_blank" rel="noopener noreferrer" className="flex-1 py-2 px-3 bg-orange-500 text-white text-xs font-bold rounded-lg text-center hover:bg-orange-600">
-                                View on Amazon
-                              </a>
-                            )}
-                            <a href={`https://alibaba.com/trade/search?SearchText=${encodeURIComponent(p.name)}`} target="_blank" rel="noopener noreferrer" className="flex-1 py-2 px-3 bg-blue-500 text-white text-xs font-bold rounded-lg text-center hover:bg-blue-600">
-                              Find Supplier
-                            </a>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Expand Button */}
-                      <button 
-                        onClick={() => setExpanded(isExpanded ? null : p.id)}
-                        className="w-full py-2 mb-3 text-xs text-slate-500 hover:text-slate-700 flex items-center justify-center gap-1"
-                      >
-                        {isExpanded ? (
-                          <>Less Details <Icon name="chevronUp" size={14} /></>
-                        ) : (
-                          <>More Details <Icon name="chevronDown" size={14} /></>
-                        )}
-                      </button>
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-2">
-                        <button onClick={() => toggleBundle(p)} className={`flex-1 py-3 rounded-xl font-bold ${inBundle(p.id) ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                          {inBundle(p.id) ? '✓ Added' : '+ Bundle'}
-                        </button>
-                        <button onClick={() => toggleSave(p)} className={`p-3 rounded-xl ${isSaved(p.id) ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-600'}`}>
-                          <Icon name="bookmark" size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {products.length > 0 && (
-              <div className="mt-6 flex justify-center">
-                <button onClick={exportCSV} className="px-6 py-3 bg-slate-800 text-white rounded-xl font-bold flex items-center gap-2">
-                  <Icon name="download" size={20} />
-                  Export to CSV
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* CALCULATOR TAB */}
-        {activeTab === 'calculator' && (
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
-                <Icon name="calculator" size={32} className="text-blue-600" />
-                Advanced FBA Profit Calculator
-              </h2>
-
-              {/* Input Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Product Cost ($)</label>
-                  <input
-                    type="number"
-                    value={calc.cost}
-                    onChange={e => setCalc({...calc, cost: parseFloat(e.target.value) || 0})}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Sell Price ($)</label>
-                  <input
-                    type="number"
-                    value={calc.sellPrice}
-                    onChange={e => setCalc({...calc, sellPrice: parseFloat(e.target.value) || 0})}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Weight (lbs)</label>
-                  <input
-                    type="number"
-                    value={calc.weight}
-                    onChange={e => setCalc({...calc, weight: parseFloat(e.target.value) || 0})}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Size Tier</label>
-                  <select
-                    value={calc.size}
-                    onChange={e => setCalc({...calc, size: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 outline-none"
-                  >
-                    <option value="standard">Standard</option>
-                    <option value="oversize">Oversize</option>
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-slate-700 mb-2">PPC Launch Budget ($)</label>
-                  <input
-                    type="number"
-                    value={calc.ppcBudget}
-                    onChange={e => setCalc({...calc, ppcBudget: parseFloat(e.target.value) || 0})}
-                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Results */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-slate-800 mb-4">Calculation Results</h3>
-                
-                {/* Fee Breakdown */}
-                <div className="bg-slate-50 rounded-xl p-6">
-                  <h4 className="font-bold text-slate-700 mb-4">Fee Breakdown</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Amazon Referral (15%)</span>
-                      <span className="font-bold text-slate-800">${calcResults.referralFee}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">FBA Fulfillment</span>
-                      <span className="font-bold text-slate-800">${calcResults.fbaFee}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Monthly Storage</span>
-                      <span className="font-bold text-slate-800">${calcResults.storageFee}</span>
-                    </div>
-                    <div className="border-t-2 border-slate-200 pt-2 mt-2 flex justify-between">
-                      <span className="font-bold text-slate-700">Total Fees</span>
-                      <span className="font-bold text-red-600">${calcResults.totalFees}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Profitability */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
-                    <div className="text-sm text-green-600 mb-1">Net Profit/Unit</div>
-                    <div className="text-3xl font-black text-green-700">${calcResults.profit}</div>
-                  </div>
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
-                    <div className="text-sm text-blue-600 mb-1">Profit Margin</div>
-                    <div className="text-3xl font-black text-blue-700">{calcResults.margin}%</div>
-                  </div>
-                  <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6">
-                    <div className="text-sm text-orange-600 mb-1">ROI</div>
-                    <div className="text-3xl font-black text-orange-700">{calcResults.roi}%</div>
-                  </div>
-                </div>
-
-                {/* Projections */}
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-orange-200 rounded-xl p-6">
-                  <h4 className="font-bold text-orange-700 mb-4">Revenue Projections</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-700">Break-Even Units (PPC budget)</span>
-                      <span className="text-2xl font-black text-orange-600">{calcResults.breakEvenUnits} units</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-700">Monthly Profit (300 units)</span>
-                      <span className="text-2xl font-black text-green-600">${calcResults.monthlyProfit}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-700">Yearly Profit (3,600 units)</span>
-                      <span className="text-2xl font-black text-green-600">${calcResults.yearlyProfit}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recommendation */}
-                <div className={`border-2 rounded-xl p-6 ${parseFloat(calcResults.margin) > 40 ? 'bg-green-50 border-green-200' : parseFloat(calcResults.margin) > 25 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'}`}>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Icon name="award" size={24} className={parseFloat(calcResults.margin) > 40 ? 'text-green-600' : parseFloat(calcResults.margin) > 25 ? 'text-yellow-600' : 'text-red-600'} />
-                    <h4 className="font-bold text-lg">Recommendation</h4>
-                  </div>
-                  <p className={`${parseFloat(calcResults.margin) > 40 ? 'text-green-700' : parseFloat(calcResults.margin) > 25 ? 'text-yellow-700' : 'text-red-700'}`}>
-                    {parseFloat(calcResults.margin) > 40 ? '✅ Excellent margins! This product has strong profit potential.' : 
-                     parseFloat(calcResults.margin) > 25 ? '⚠️ Acceptable margins. Consider negotiating better supplier pricing.' :
-                     '❌ Low margins. This product may not be profitable after PPC costs.'}
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        )}
 
-        {/* COMPETITORS TAB */}
-        {activeTab === 'competitors' && (
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
-                <Icon name="target" size={32} className="text-red-600" />
-                Competitor Tracker
-              </h2>
-
-              {/* Add Competitor */}
-              <div className="bg-slate-50 rounded-xl p-6 mb-8">
-                <h3 className="font-bold text-slate-700 mb-4">Add Competitor ASIN</h3>
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    value={newAsin}
-                    onChange={e => setNewAsin(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && addCompetitor()}
-                    placeholder="Enter ASIN (e.g., B08XYZ123)"
-                    className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-red-500 outline-none"
-                  />
-                  <button onClick={addCompetitor} className="px-8 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600">
-                    <Icon name="plus" size={20} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Competitors List */}
-              {competitors.length === 0 ? (
-                <div className="text-center py-12">
-                  <Icon name="target" size={64} className="mx-auto text-slate-300 mb-4" />
-                  <p className="text-slate-500">No competitors tracked yet. Add an ASIN above to start monitoring.</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {competitors.map(comp => (
-                    <div key={comp.id} className="bg-slate-50 rounded-xl p-6 flex items-center justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-bold text-slate-800 mb-1">{comp.name}</h4>
-                        <p className="text-sm text-slate-500 mb-3">ASIN: {comp.asin} • Added: {comp.addedDate}</p>
-                        <div className="grid grid-cols-4 gap-4">
-                          <div>
-                            <div className="text-xs text-slate-500">Price</div>
-                            <div className="font-bold text-green-600">${comp.price}</div>
-                          </div>
-                          <div>
-                            <div className="text-xs text-slate-500">BSR</div>
-                            <div className="font-bold text-blue-600">#{comp.bsr.toLocaleString()}</div>
-                          </div>
-                          <div>
-                            <div className="text-xs text-slate-500">Reviews</div>
-                            <div className="font-bold text-orange-600">{comp.reviews}</div>
-                          </div>
-                          <div>
-                            <div className="text-xs text-slate-500">Rating</div>
-                            <div className="font-bold text-orange-600">⭐ {comp.rating}</div>
-                          </div>
-                        </div>
-                      </div>
-                      <button onClick={() => removeCompetitor(comp.id)} className="ml-4 p-3 bg-red-100 text-red-600 rounded-xl hover:bg-red-200">
-                        <Icon name="x" size={20} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+          {/* Keyword Search */}
+          <div className="mb-6">
+            <label className="block text-sm font-semibold mb-3 text-gray-300">
+              Or Search by Keyword
+            </label>
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => {
+                setKeyword(e.target.value);
+                setCategory('');
+              }}
+              placeholder="e.g., resistance bands, yoga mat, camping gear..."
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white placeholder-gray-500"
+            />
           </div>
-        )}
 
-        {/* SAVED TAB */}
-        {activeTab === 'saved' && (
-          <div>
-            <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
-              <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
-                <Icon name="bookmark" size={32} className="text-orange-600" />
-                Saved Products ({saved.length})
-              </h2>
-            </div>
-
-            {saved.length === 0 ? (
-              <div className="text-center py-20">
-                <Icon name="bookmark" size={64} className="mx-auto text-slate-300 mb-4" />
-                <p className="text-slate-500 text-lg">No saved products yet</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {saved.map(p => {
-                  const validation = getValidationScore(p);
-                  const isExpanded = expanded === p.id;
-                  
-                  return (
-                    <div key={p.id} className="bg-white rounded-2xl border-2 border-orange-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                      {/* Validation Score Bar */}
-                      <div className={`h-2 bg-gradient-to-r ${validation.color === 'green' ? 'from-green-500 to-emerald-500' : validation.color === 'blue' ? 'from-blue-500 to-cyan-500' : validation.color === 'yellow' ? 'from-yellow-500 to-orange-500' : 'from-red-500 to-rose-500'}`} />
-                      
-                      <div className="p-5">
-                        {/* Header */}
-                        <div className="flex justify-between items-start gap-3 mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                              <span className="text-3xl">{p.emoji || '📦'}</span>
-                              <span className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-semibold">{p.category}</span>
-                              {p.trend?.direction && (
-                                <span className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full font-bold ${
-                                  p.trend.direction === 'Rising' ? 'bg-green-100 text-green-700' :
-                                  p.trend.direction === 'Falling' ? 'bg-red-100 text-red-700' :
-                                  'bg-blue-100 text-blue-700'
-                                }`}>
-                                  {p.trend.direction === 'Rising' ? '↗️' : p.trend.direction === 'Falling' ? '↘️' : '→'} 
-                                  {p.trend.direction}
-                                </span>
-                              )}
-                            </div>
-                            <h3 className="font-bold text-slate-800 text-lg mb-1">{p.name}</h3>
-                            {p.asin && <p className="text-xs text-slate-500">ASIN: {p.asin}</p>}
-                          </div>
-                          <div className="text-center">
-                            <div className={`text-2xl font-black ${validation.color === 'green' ? 'text-green-600' : validation.color === 'blue' ? 'text-blue-600' : validation.color === 'yellow' ? 'text-yellow-600' : 'text-red-600'}`}>
-                              {validation.score}
-                            </div>
-                            <div className="text-xs text-slate-500">{validation.rating}</div>
-                          </div>
-                        </div>
-
-                        <p className="text-slate-600 text-sm mb-4">{p.desc}</p>
-
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-2 gap-2 mb-4">
-                          <div className="bg-blue-50 p-3 rounded-xl">
-                            <div className="text-xs text-slate-500">BSR Rank</div>
-                            <div className="font-bold text-blue-700">#{(p.bsr?.rank || 0).toLocaleString()}</div>
-                          </div>
-                          <div className="bg-green-50 p-3 rounded-xl">
-                            <div className="text-xs text-slate-500">Margin</div>
-                            <div className="font-bold text-green-700">{p.price?.margin || 0}%</div>
-                          </div>
-                        </div>
-
-                        {/* Expandable Details */}
-                        {isExpanded && (
-                          <div className="mb-4 space-y-3 border-t-2 border-orange-100 pt-4">
-                            {/* Pricing Grid */}
-                            <div className="bg-slate-50 rounded-xl p-4">
-                              <h4 className="font-bold text-slate-700 mb-3 text-sm">💰 Pricing Breakdown</h4>
-                              <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div><span className="text-slate-500">Cost:</span> <span className="font-bold text-slate-800 ml-2">${p.price?.cost || 0}</span></div>
-                                <div><span className="text-slate-500">Sell:</span> <span className="font-bold text-green-600 ml-2">${p.price?.sell || 0}</span></div>
-                                <div><span className="text-slate-500">Margin:</span> <span className="font-bold text-blue-600 ml-2">{p.price?.margin || 0}%</span></div>
-                                <div><span className="text-slate-500">ROI:</span> <span className="font-bold text-orange-600 ml-2">{p.price?.roi || 0}%</span></div>
-                              </div>
-                            </div>
-
-                            {/* Suppliers */}
-                            {p.suppliers && (
-                              <div className="bg-amber-50 rounded-xl p-4">
-                                <h4 className="font-bold text-slate-700 mb-3 text-sm">📦 Supplier Prices</h4>
-                                <div className="space-y-2 text-xs">
-                                  {p.suppliers.aliexpress && (
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-slate-600">AliExpress:</span> 
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-bold">${p.suppliers.aliexpress}</span>
-                                        {p.aliexpress && (
-                                          <a href={p.aliexpress} target="_blank" rel="noopener noreferrer" className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded text-xs">
-                                            View →
-                                          </a>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-                                  <div className="flex justify-between"><span className="text-slate-600">Alibaba:</span> <span className="font-bold">${p.suppliers.alibaba || 'N/A'}</span></div>
-                                  <div className="flex justify-between"><span className="text-slate-600">CJ Dropshipping:</span> <span className="font-bold">${p.suppliers.cj || 'N/A'}</span></div>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Profitability */}
-                            {p.profitability && (
-                              <div className="bg-green-50 rounded-xl p-4">
-                                <h4 className="font-bold text-slate-700 mb-3 text-sm">💵 Profitability</h4>
-                                <div className="space-y-2 text-xs">
-                                  <div className="flex justify-between"><span className="text-slate-600">Break-even:</span> <span className="font-bold">{p.profitability.breakeven} units</span></div>
-                                  <div className="flex justify-between"><span className="text-slate-600">Monthly:</span> <span className="font-bold text-green-600">${p.profitability.monthly?.toLocaleString()}</span></div>
-                                  <div className="flex justify-between"><span className="text-slate-600">Yearly:</span> <span className="font-bold text-green-700">${p.profitability.yearly?.toLocaleString()}</span></div>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Competition & Reviews */}
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="bg-red-50 rounded-xl p-4">
-                                <h4 className="font-bold text-slate-700 mb-2 text-sm">👥 Competition</h4>
-                                <div className="text-xs space-y-1">
-                                  <div><span className="text-slate-600">Sellers:</span> <span className="font-bold ml-1">{p.competition?.sellers || 'N/A'}</span></div>
-                                  <div><span className="text-slate-600">Level:</span> <span className="font-bold ml-1">{p.competition?.level || 'N/A'}</span></div>
-                                </div>
-                              </div>
-                              <div className="bg-blue-50 rounded-xl p-4">
-                                <h4 className="font-bold text-slate-700 mb-2 text-sm">⭐ Reviews</h4>
-                                <div className="text-xs space-y-1">
-                                  <div><span className="text-slate-600">Count:</span> <span className="font-bold ml-1">{p.reviews?.count || 0}</span></div>
-                                  <div><span className="text-slate-600">Rating:</span> <span className="font-bold ml-1">{p.reviews?.rating || 'N/A'}</span></div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Links */}
-                            <div className="flex gap-2 text-xs">
-                              {p.asin && (
-                                <a href={`https://amazon.com/dp/${p.asin}`} target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-amber-500 text-white rounded-lg text-center font-bold hover:bg-amber-600">
-                                  View on Amazon
-                                </a>
-                              )}
-                              <a href={`https://alibaba.com/trade/search?SearchText=${encodeURIComponent(p.name)}`} target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-orange-500 text-white rounded-lg text-center font-bold hover:bg-orange-600">
-                                Find on Alibaba
-                              </a>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => setExpanded(isExpanded ? null : p.id)} 
-                            className="flex-1 py-2 bg-orange-100 text-orange-700 rounded-xl font-bold hover:bg-orange-200 transition-all flex items-center justify-center gap-2"
-                          >
-                            <Icon name={isExpanded ? 'chevronUp' : 'chevronDown'} size={18} />
-                            {isExpanded ? 'Hide Details' : 'View Details'}
-                          </button>
-                          <button 
-                            onClick={() => toggleSave(p)} 
-                            className="flex-1 py-2 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 transition-all"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* BUNDLES TAB */}
-        {activeTab === 'bundles' && (
-          <div>
-            <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
-                  <Icon name="layers" size={32} className="text-green-600" />
-                  Bundle Builder
-                </h2>
-                <div className="text-sm text-slate-500">
-                  Current: {bundles.length} items | Saved: {savedBundles.length} bundles
-                </div>
-              </div>
-            </div>
-
-            {/* Current Bundle Being Built */}
-            {bundles.length > 0 && (
-              <div className="mb-6">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 mb-4">
-                  <h3 className="text-lg font-bold text-green-800 mb-4">📦 Current Bundle (Unsaved)</h3>
-                  
-                  {/* Bundle Name Input */}
-                  <div className="mb-4">
-                    <input
-                      type="text"
-                      value={bundleName}
-                      onChange={e => setBundleName(e.target.value)}
-                      placeholder="Enter bundle name (optional)"
-                      className="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:border-green-500 outline-none"
-                    />
-                  </div>
-
-                  {/* Bundle Summary */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                    <div className="bg-white rounded-xl p-4 border border-green-200">
-                      <div className="text-sm text-green-600 mb-1">Items</div>
-                      <div className="text-2xl font-black text-green-700">{bundles.length}</div>
-                    </div>
-                    <div className="bg-white rounded-xl p-4 border border-green-200">
-                      <div className="text-sm text-green-600 mb-1">Total Cost</div>
-                      <div className="text-2xl font-black text-green-700">
-                        ${bundles.reduce((sum, p) => sum + (p.price?.cost || 0), 0).toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-xl p-4 border border-green-200">
-                      <div className="text-sm text-green-600 mb-1">Bundle Price (20% off)</div>
-                      <div className="text-2xl font-black text-green-700">
-                        ${(bundles.reduce((sum, p) => sum + (p.price?.sell || 0), 0) * 0.8).toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-xl p-4 border border-green-200">
-                      <div className="text-sm text-green-600 mb-1">Bundle Profit</div>
-                      <div className="text-2xl font-black text-green-700">
-                        ${(bundles.reduce((sum, p) => sum + (p.price?.sell || 0), 0) * 0.8 - bundles.reduce((sum, p) => sum + (p.price?.cost || 0), 0) - (bundles.reduce((sum, p) => sum + (p.price?.sell || 0), 0) * 0.8 * 0.15) - 5).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Save Bundle Button */}
-                  <button
-                    onClick={saveCurrentBundle}
-                    className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl flex items-center justify-center gap-2"
-                  >
-                    <Icon name="check" size={20} />
-                    Save This Bundle
-                  </button>
-                </div>
-
-                {/* Current Bundle Items */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  {bundles.map(p => (
-                    <div key={p.id} className="bg-white rounded-xl border-2 border-green-200 shadow p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <span className="text-2xl">{p.emoji}</span>
-                          <h4 className="font-bold text-slate-800 text-sm mt-1">{p.name}</h4>
-                        </div>
-                        <button onClick={() => toggleBundle(p)} className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200">
-                          <Icon name="x" size={16} />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-slate-50 p-2 rounded text-center">
-                          <div className="text-slate-500">Cost</div>
-                          <div className="font-bold">${p.price?.cost}</div>
-                        </div>
-                        <div className="bg-slate-50 p-2 rounded text-center">
-                          <div className="text-slate-500">Sell</div>
-                          <div className="font-bold">${p.price?.sell}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {bundles.length === 0 && savedBundles.length === 0 && (
-              <div className="text-center py-20">
-                <Icon name="layers" size={64} className="mx-auto text-slate-300 mb-4" />
-                <p className="text-slate-500 text-lg mb-2">No bundles yet</p>
-                <p className="text-slate-400 text-sm">Go to Discover tab and click "+ Bundle" on products</p>
-              </div>
-            )}
-
-            {/* Saved Bundles */}
-            {savedBundles.length > 0 && (
+          {/* Advanced Filters */}
+          <div className="mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
+            <h3 className="text-lg font-semibold mb-4 text-orange-400">⚙️ Advanced Filters</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <div>
-                <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                  <Icon name="bookmark" size={24} />
-                  Saved Bundles ({savedBundles.length})
-                </h3>
-                <div className="space-y-4">
-                  {savedBundles.map(bundle => (
-                    <div key={bundle.id} className="bg-white rounded-2xl border-2 border-slate-200 shadow-lg p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h4 className="text-lg font-bold text-slate-800">{bundle.name}</h4>
-                          <p className="text-sm text-slate-500">Created: {bundle.created} • {bundle.products.length} items</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => loadBundle(bundle)}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 flex items-center gap-2"
-                          >
-                            <Icon name="layers" size={16} />
-                            Load
-                          </button>
-                          <button
-                            onClick={() => deleteSavedBundle(bundle.id)}
-                            className="px-4 py-2 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600"
-                          >
-                            <Icon name="x" size={16} />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Bundle Summary */}
-                      <div className="grid grid-cols-4 gap-3 mb-4">
-                        <div className="bg-blue-50 rounded-lg p-3 text-center">
-                          <div className="text-xs text-blue-600">Items</div>
-                          <div className="text-lg font-bold text-blue-700">{bundle.products.length}</div>
-                        </div>
-                        <div className="bg-red-50 rounded-lg p-3 text-center">
-                          <div className="text-xs text-red-600">Cost</div>
-                          <div className="text-lg font-bold text-red-700">${bundle.totalCost.toFixed(2)}</div>
-                        </div>
-                        <div className="bg-green-50 rounded-lg p-3 text-center">
-                          <div className="text-xs text-green-600">Price</div>
-                          <div className="text-lg font-bold text-green-700">${bundle.bundlePrice.toFixed(2)}</div>
-                        </div>
-                        <div className="bg-orange-50 rounded-lg p-3 text-center">
-                          <div className="text-xs text-orange-600">Profit</div>
-                          <div className="text-lg font-bold text-orange-700">
-                            ${(bundle.bundlePrice - bundle.totalCost - (bundle.bundlePrice * 0.15) - 5).toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Bundle Products */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {bundle.products.map(p => (
-                          <div key={p.id} className="bg-slate-50 rounded-lg p-2">
-                            <div className="text-lg mb-1">{p.emoji}</div>
-                            <div className="text-xs font-semibold text-slate-700 truncate">{p.name}</div>
-                            <div className="text-xs text-slate-500">${p.price?.sell}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <label className="block text-xs mb-1 text-gray-400">Min Price ($)</label>
+                <input
+                  type="number"
+                  value={filters.minPrice}
+                  onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
+                  placeholder="0"
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white"
+                />
               </div>
-            )}
+              <div>
+                <label className="block text-xs mb-1 text-gray-400">Max Price ($)</label>
+                <input
+                  type="number"
+                  value={filters.maxPrice}
+                  onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
+                  placeholder="999"
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs mb-1 text-gray-400">Min Margin (%)</label>
+                <input
+                  type="number"
+                  value={filters.minMargin}
+                  onChange={(e) => setFilters(prev => ({ ...prev, minMargin: e.target.value }))}
+                  placeholder="0"
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs mb-1 text-gray-400">Max BSR</label>
+                <input
+                  type="number"
+                  value={filters.maxBSR}
+                  onChange={(e) => setFilters(prev => ({ ...prev, maxBSR: e.target.value }))}
+                  placeholder="100000"
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs mb-1 text-gray-400">Min Reviews</label>
+                <input
+                  type="number"
+                  value={filters.minReviews}
+                  onChange={(e) => setFilters(prev => ({ ...prev, minReviews: e.target.value }))}
+                  placeholder="0"
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs mb-1 text-gray-400">Min Rating</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={filters.minRating}
+                  onChange={(e) => setFilters(prev => ({ ...prev, minRating: e.target.value }))}
+                  placeholder="0"
+                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <label className="block text-xs mb-1 text-gray-400">Sort By</label>
+              <select
+                value={filters.sortBy}
+                onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
+                className="w-full md:w-64 px-3 py-2 bg-gray-900 border border-gray-700 rounded text-sm text-white"
+              >
+                <option value="profit">💰 Highest Profit</option>
+                <option value="margin">📊 Highest Margin %</option>
+                <option value="bsr">🏆 Best BSR (lowest)</option>
+                <option value="reviews">⭐ Most Reviews</option>
+                <option value="rating">🌟 Highest Rating</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Search Button */}
+          <button
+            onClick={searchProducts}
+            disabled={loading || (!category && !keyword)}
+            className={`w-full py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
+              loading || (!category && !keyword)
+                ? 'bg-gray-700 cursor-not-allowed'
+                : 'bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-600 shadow-lg hover:shadow-xl'
+            }`}
+          >
+            {loading ? '🔄 Searching...' : '🚀 Search Products'}
+          </button>
+
+          {error && (
+            <div className="mt-4 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-200">
+              ⚠️ {error}
+            </div>
+          )}
+        </div>
+
+        {/* Results Stats */}
+        {filteredProducts.length > 0 && (
+          <div className="mb-6 p-4 bg-gray-900 rounded-lg border border-gray-800">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="text-gray-300">
+                <span className="text-2xl font-bold text-orange-400">{filteredProducts.length}</span> products found
+                {filteredProducts.length !== products.length && (
+                  <span className="text-gray-500 ml-2">({products.length} total, {products.length - filteredProducts.length} filtered out)</span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={generateBundleAI}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition text-sm font-semibold"
+                >
+                  🤖 Generate Bundle AI
+                </button>
+                <button
+                  onClick={() => {
+                    setFilters({
+                      minPrice: '',
+                      maxPrice: '',
+                      minMargin: '',
+                      maxBSR: '',
+                      minReviews: '',
+                      minRating: '',
+                      sortBy: 'profit'
+                    });
+                  }}
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition text-sm"
+                >
+                  🔄 Reset Filters
+                </button>
+              </div>
+            </div>
           </div>
         )}
-      </main>
 
-      {/* V4.3 Bundle AI Modal */}
-      {showBundleAI && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="bg-gradient-to-r from-orange-600 to-pink-600 p-6">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <Icon name="brain" size={36} className="text-white" />
-                  <div>
-                    <h2 className="text-2xl font-black text-white">Bundle AI Suggestions</h2>
-                    <p className="text-orange-100">Profitable 2-pack combinations</p>
+        {/* Products Grid */}
+        {filteredProducts.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map((product, index) => {
+              const calc = calculateProfit(product);
+              const hasHistory = priceHistory[product.asin] || bsrHistory[product.asin];
+
+              return (
+                <div
+                  key={index}
+                  className="bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-800 hover:border-orange-600 group"
+                >
+                  {/* Product Image */}
+                  {product.image_url && (
+                    <div className="relative h-48 bg-gray-800 overflow-hidden">
+                      <img
+                        src={product.image_url}
+                        alt={product.title}
+                        className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        {hasHistory && (
+                          <span className="bg-green-600 text-white text-xs px-2 py-1 rounded">
+                            📊 Tracked
+                          </span>
+                        )}
+                        {parseFloat(calc.margin) > 50 && (
+                          <span className="bg-orange-600 text-white text-xs px-2 py-1 rounded">
+                            🔥 Hot
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Product Info */}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-white mb-2 line-clamp-2 min-h-[48px]">
+                      {product.title}
+                    </h3>
+
+                    {/* Price & Stats */}
+                    <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
+                      <div className="bg-gray-800 p-2 rounded">
+                        <div className="text-gray-400 text-xs">Amazon Price</div>
+                        <div className="text-green-400 font-bold">${product.price}</div>
+                      </div>
+                      <div className="bg-gray-800 p-2 rounded">
+                        <div className="text-gray-400 text-xs">Supplier Cost</div>
+                        <div className="text-blue-400 font-bold">${product.supplier_price || 'N/A'}</div>
+                      </div>
+                      <div className="bg-gray-800 p-2 rounded">
+                        <div className="text-gray-400 text-xs">BSR</div>
+                        <div className="text-purple-400 font-bold">{formatBSR(product.bsr)}</div>
+                      </div>
+                      <div className="bg-gray-800 p-2 rounded">
+                        <div className="text-gray-400 text-xs">Reviews</div>
+                        <div className="text-yellow-400 font-bold">
+                          ⭐ {product.rating || 'N/A'} ({product.reviews || 0})
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Profit Metrics */}
+                    <div className="bg-gradient-to-r from-orange-900/30 to-orange-800/30 p-3 rounded-lg mb-3 border border-orange-700/50">
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div>
+                          <div className="text-xs text-gray-400 mb-1">Profit</div>
+                          <div className="text-orange-400 font-bold">${calc.profit}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-400 mb-1">Margin</div>
+                          <div className="text-orange-400 font-bold">{calc.margin}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-400 mb-1">ROI</div>
+                          <div className="text-orange-400 font-bold">{calc.roi}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedProduct(product)}
+                        className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 rounded text-sm font-semibold transition"
+                      >
+                        📊 Details
+                      </button>
+                      <button
+                        onClick={() => saveProduct(product)}
+                        className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm transition"
+                      >
+                        💾
+                      </button>
+                      <button
+                        onClick={() => addCompetitor(product.asin)}
+                        className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm transition"
+                      >
+                        👁️
+                      </button>
+                    </div>
+
+                    {/* Chart Buttons */}
+                    {hasHistory && (
+                      <div className="flex gap-2 mt-2">
+                        {priceHistory[product.asin] && (
+                          <button
+                            onClick={() => showPriceChart(product)}
+                            className="flex-1 px-2 py-1 bg-green-700/50 hover:bg-green-700 rounded text-xs transition"
+                          >
+                            📈 Price
+                          </button>
+                        )}
+                        {bsrHistory[product.asin] && (
+                          <button
+                            onClick={() => showBSRChart(product)}
+                            className="flex-1 px-2 py-1 bg-purple-700/50 hover:bg-purple-700 rounded text-xs transition"
+                          >
+                            📊 BSR
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Links */}
+                    <div className="flex gap-2 mt-3 text-xs">
+                      {product.amazon_url && (
+                        <a
+                          href={product.amazon_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 px-2 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-center transition"
+                        >
+                          🛒 Amazon
+                        </a>
+                      )}
+                      {product.supplier_url && (
+                        <a
+                          href={product.supplier_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-center transition"
+                        >
+                          🔗 Supplier
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Product Detail Modal */}
+        {selectedProduct && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-800">
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-6">
+                  <h2 className="text-2xl font-bold text-white pr-8">{selectedProduct.title}</h2>
+                  <button
+                    onClick={() => setSelectedProduct(null)}
+                    className="text-gray-400 hover:text-white text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {selectedProduct.image_url && (
+                  <img
+                    src={selectedProduct.image_url}
+                    alt={selectedProduct.title}
+                    className="w-full max-h-64 object-contain mb-6 bg-gray-800 rounded-lg p-4"
+                  />
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-orange-400">Product Details</h3>
+                    <div className="space-y-3">
+                      <div className="bg-gray-800 p-3 rounded">
+                        <div className="text-gray-400 text-sm">ASIN</div>
+                        <div className="text-white font-mono">{selectedProduct.asin || 'N/A'}</div>
+                      </div>
+                      <div className="bg-gray-800 p-3 rounded">
+                        <div className="text-gray-400 text-sm">Amazon Price</div>
+                        <div className="text-green-400 text-xl font-bold">${selectedProduct.price}</div>
+                      </div>
+                      <div className="bg-gray-800 p-3 rounded">
+                        <div className="text-gray-400 text-sm">Supplier Cost</div>
+                        <div className="text-blue-400 text-xl font-bold">${selectedProduct.supplier_price || 'N/A'}</div>
+                      </div>
+                      <div className="bg-gray-800 p-3 rounded">
+                        <div className="text-gray-400 text-sm">Best Sellers Rank</div>
+                        <div className="text-purple-400 font-bold">{formatBSR(selectedProduct.bsr)}</div>
+                      </div>
+                      <div className="bg-gray-800 p-3 rounded">
+                        <div className="text-gray-400 text-sm">Rating & Reviews</div>
+                        <div className="text-yellow-400 font-bold">
+                          ⭐ {selectedProduct.rating || 'N/A'} ({selectedProduct.reviews || 0} reviews)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-orange-400">Profit Analysis</h3>
+                    <div className="bg-gradient-to-br from-orange-900/50 to-orange-800/50 p-4 rounded-lg border border-orange-700/50 mb-4">
+                      {(() => {
+                        const calc = calculateProfit(selectedProduct);
+                        return (
+                          <>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <div className="text-gray-300 text-sm mb-1">Profit per Unit</div>
+                                <div className="text-2xl font-bold text-orange-400">${calc.profit}</div>
+                              </div>
+                              <div>
+                                <div className="text-gray-300 text-sm mb-1">Profit Margin</div>
+                                <div className="text-2xl font-bold text-orange-400">{calc.margin}</div>
+                              </div>
+                              <div>
+                                <div className="text-gray-300 text-sm mb-1">ROI</div>
+                                <div className="text-2xl font-bold text-orange-400">{calc.roi}</div>
+                              </div>
+                              <div>
+                                <div className="text-gray-300 text-sm mb-1">Monthly Revenue</div>
+                                <div className="text-xl font-bold text-green-400">${calc.monthly}</div>
+                              </div>
+                            </div>
+                            <div className="border-t border-orange-700/50 pt-3">
+                              <div className="text-gray-300 text-sm mb-1">Yearly Projection</div>
+                              <div className="text-3xl font-bold text-green-400">${calc.yearly}</div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Alert Setup */}
+                    <div className="bg-gray-800 p-4 rounded-lg mb-4">
+                      <h4 className="font-semibold mb-3 text-white">🔔 Set Price Alert</h4>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          placeholder="Target price"
+                          className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded text-white"
+                        />
+                        <button
+                          onClick={() => setupAlert(selectedProduct, 'price_drop', 20)}
+                          className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded transition"
+                        >
+                          Set Alert
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Links */}
+                    <div className="space-y-2">
+                      {selectedProduct.amazon_url && (
+                        <a
+                          href={selectedProduct.amazon_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full px-4 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-center font-semibold transition"
+                        >
+                          🛒 View on Amazon →
+                        </a>
+                      )}
+                      {selectedProduct.supplier_url && (
+                        <a
+                          href={selectedProduct.supplier_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg text-center font-semibold transition"
+                        >
+                          🔗 View Supplier →
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bundle AI Modal */}
+        {showBundleAI && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-900 rounded-xl max-w-2xl w-full border border-gray-800 p-6">
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-2xl font-bold text-white">🤖 AI Bundle Suggestion</h2>
                 <button
                   onClick={() => setShowBundleAI(false)}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                  className="text-gray-400 hover:text-white text-2xl"
                 >
-                  <Icon name="x" size={24} className="text-white" />
+                  ×
                 </button>
               </div>
-            </div>
-
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-              {bundleSuggestions.length === 0 ? (
-                <div className="text-center py-12">
-                  <Icon name="alert" size={48} className="mx-auto text-slate-300 mb-4" />
-                  <p className="text-slate-500">No bundle suggestions found. Try products in the same category with similar prices!</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {bundleSuggestions.map((bundle, idx) => (
-                    <div key={bundle.id} className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl p-5 border-2 border-orange-200">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-lg font-bold text-orange-900">Bundle #{idx + 1}</h3>
-                          <p className="text-sm text-orange-600">Score: {bundle.score}/100</p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-black text-green-600">${bundle.profit}</div>
-                          <div className="text-xs text-green-700">Profit ({bundle.margin}% margin)</div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        {bundle.products.map((p, pidx) => (
-                          <div key={pidx} className="bg-white rounded-xl p-3 border border-orange-200">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-2xl">{p.emoji}</span>
-                              <div className="flex-1">
-                                <h4 className="font-bold text-sm text-slate-800">{p.name}</h4>
-                                <p className="text-xs text-slate-500">{p.category}</p>
-                              </div>
-                            </div>
-                            <div className="flex justify-between text-xs">
-                              <span className="text-slate-600">Cost: ${p.price?.cost}</span>
-                              <span className="text-green-600">Sell: ${p.price?.sell}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                        <div className="bg-white rounded-lg p-2">
-                          <div className="text-xs text-slate-500">Bundle Cost</div>
-                          <div className="font-bold text-red-600">${bundle.bundleCost}</div>
-                        </div>
-                        <div className="bg-white rounded-lg p-2">
-                          <div className="text-xs text-slate-500">Bundle Price</div>
-                          <div className="font-bold text-blue-600">${bundle.bundlePrice}</div>
-                        </div>
-                        <div className="bg-white rounded-lg p-2">
-                          <div className="text-xs text-slate-500">Margin</div>
-                          <div className="font-bold text-green-600">{bundle.margin}%</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="border-t p-4 bg-slate-50">
-              <button
-                onClick={() => setShowBundleAI(false)}
-                className="w-full py-3 bg-gradient-to-r from-orange-600 to-pink-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity"
-              >
-                Close
-              </button>
+              <div className="bg-gray-800 p-4 rounded-lg whitespace-pre-wrap text-gray-300">
+                {bundleSuggestion}
+              </div>
             </div>
           </div>
+        )}
+
+        {/* Chart Modal */}
+        {showCharts && selectedChart && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-900 rounded-xl max-w-4xl w-full border border-gray-800 p-6">
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-2xl font-bold text-white">
+                  {selectedChart.type === 'price' ? '📈 Price History' : '📊 BSR History'}
+                </h2>
+                <button
+                  onClick={() => setShowCharts(false)}
+                  className="text-gray-400 hover:text-white text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="bg-gray-800 p-4 rounded-lg h-96">
+                {/* Chart would render here - using a library like recharts or chart.js */}
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  Chart visualization for {selectedChart.product.title}
+                  <br />
+                  (Integrate with Chart.js or Recharts)
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Debug Panel */}
+        {showDebug && (
+          <div className="fixed bottom-4 right-4 w-96 bg-gray-900 rounded-lg border border-gray-800 shadow-2xl max-h-96 overflow-hidden">
+            <div className="p-3 bg-gray-800 border-b border-gray-700 flex justify-between items-center">
+              <span className="font-semibold text-sm">🔍 Debug Logs</span>
+              <button
+                onClick={() => setDebugLogs([])}
+                className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded"
+              >
+                Clear
+              </button>
+            </div>
+            <div className="p-3 space-y-2 max-h-80 overflow-y-auto">
+              {debugLogs.map((log, i) => (
+                <div key={i} className="text-xs bg-gray-800 p-2 rounded border border-gray-700">
+                  <div className="text-gray-400 mb-1">{log.time}</div>
+                  <div className="text-white font-semibold mb-1">{log.message}</div>
+                  {log.data && (
+                    <pre className="text-gray-400 text-xs overflow-x-auto">
+                      {JSON.stringify(log.data, null, 2)}
+                    </pre>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Footer Stats */}
+        <div className="mt-12 text-center text-gray-500 text-sm">
+          <p>ARK Bundle Scanner V6.0 - The Beast Edition</p>
+          <p className="mt-1">
+            {categories.length} Categories • Advanced Filters • Real-time Tracking • BSR History • Price Alerts
+          </p>
+          <p className="mt-1 text-orange-400">
+            💰 Still only ~$0.50/month vs competitors at $19-99/month
+          </p>
         </div>
-      )}
+      </div>
     </div>
   );
 }
