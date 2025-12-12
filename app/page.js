@@ -5,7 +5,15 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 export default function Home() {
   // ============================================================================
   // STATE MANAGEMENT
-  // ============================================================================
+  // ============================================================================```javascript
+const [isAuth, setIsAuth] = useState(false);
+useEffect(() => {
+  const p = prompt('Password:');
+  if (p === 'arkglobal2024') setIsAuth(true);
+  else location.reload();
+}, []);
+if (!isAuth) return <div className="h-screen bg-black"></div>;
+```
   const [category, setCategory] = useState('');
   const [keyword, setKeyword] = useState('');
   const [products, setProducts] = useState([]);
