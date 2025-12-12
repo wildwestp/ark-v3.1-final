@@ -1,4 +1,4 @@
-// ARK V5.1 PRODUCTION - Fast & Reliable
+// ARK V5.2 - Enhanced Search with AliExpress Integration
 import { NextResponse } from 'next/server';
 
 let supabase = null;
@@ -15,19 +15,23 @@ function getSupabase() {
 }
 
 function hashQuery(query, category) {
-  return `${category}_${query}`.toLowerCase().replace(/[^a-z0-9]/g, '_');
+  const normalized = `${category}_${query || 'default'}`.toLowerCase().replace(/[^a-z0-9]/g, '_');
+  return normalized;
 }
 
 export async function POST(request) {
   try {
     const { prompt, category, searchQuery } = await request.json();
     const startTime = Date.now();
-    const cacheKey = hashQuery(searchQuery || 'default', category || 'general');
+    const cleanCategory = category?.replace(/[🔥🍳🏠🧹💄📱🐕💪👕👶🌱🎮🎧📷🏋️🎨📚🚗🎒]/g, '').trim() || 'General';
+    const cacheKey = hashQuery(searchQuery, cleanCategory);
     const db = getSupabase();
+
+    console.log('🔍 Search:', cleanCategory, '-', searchQuery || 'default');
 
     // Check cache first
     if (db) {
-      const { data: cached, error: cacheError } = await db
+      const { data: cached } = await db
         .from('product_cache')
         .select('*')
         .eq('cache_key', cacheKey)
@@ -36,8 +40,8 @@ export async function POST(request) {
         .limit(1)
         .single();
 
-      if (cached && !cacheError) {
-        console.log('✅ Cache HIT:', cacheKey);
+      if (cached) {
+        console.log('✅ Cache HIT:', Date.now() - startTime, 'ms');
         await db
           .from('product_cache')
           .update({ search_count: cached.search_count + 1 })
@@ -52,19 +56,37 @@ export async function POST(request) {
       }
     }
 
-    console.log('🔍 New search:', category, searchQuery);
-
     const cleanKey = process.env.PERPLEXITY_API_KEY?.trim();
     if (!cleanKey) {
       return NextResponse.json({ error: 'API key missing' }, { status: 500 });
     }
 
-    // Optimized prompt - shorter, clearer, more reliable
-    const optimizedPrompt = `Find 8 popular ${category} products on Amazon. Return ONLY a JSON array, no markdown.
+    // Enhanced prompt with keyword focus and AliExpress
+    const enhancedPrompt = searchQuery 
+      ? `Find 8 "${searchQuery}" products on Amazon. Focus specifically on "${searchQuery}" - exact matches preferred.
 
-Format: [{"name":"Product Name","category":"${category}","emoji":"📦","desc":"why popular","asin":"B0XXXXXX","price":{"cost":10,"sell":30,"margin":67,"roi":200},"bsr":{"rank":5000,"category":"${category}","monthlySales":500},"reviews":{"count":800,"rating":4.3},"competition":{"sellers":50,"level":"Medium"},"viral":{"score":75,"platform":"TikTok","reason":"trending","views":"2M"},"trend":{"direction":"Rising","velocity":"Medium"},"suppliers":{"alibaba":8,"cj":9},"profitability":{"breakeven":40,"monthly":1800,"yearly":21600}}]
+For EACH product, find:
+1. Amazon ASIN and current BSR
+2. Best AliExpress supplier price for same/similar product
+3. Calculate profit margin (Amazon price - AliExpress cost)
 
-Return 8 products with realistic data. If you can't find real products, generate plausible examples for this category.`;
+Return JSON array: [{"name":"Exact Product Name","category":"${cleanCategory}","emoji":"📦","desc":"why profitable","asin":"B0XXXXXX","aliexpress":"https://aliexpress.com/item/xxxxx","price":{"cost":8,"sell":30,"margin":73,"roi":275},"bsr":{"rank":8000,"category":"${cleanCategory}","monthlySales":400},"reviews":{"count":600,"rating":4.3},"competition":{"sellers":35,"level":"Medium"},"suppliers":{"aliexpress":6.5,"alibaba":7.2},"profitability":{"breakeven":25,"monthly":1600,"yearly":19200}}]
+
+IMPORTANT: 
+- Match "${searchQuery}" exactly
+- Find cheapest AliExpress suppliers
+- Calculate real profit margins
+- Return 8 products`
+      : `Find 8 popular ${cleanCategory} products on Amazon.
+
+For EACH product:
+1. Amazon ASIN and BSR
+2. Find cheapest AliExpress supplier
+3. Calculate profit margin
+
+Return JSON: [{"name":"Product","category":"${cleanCategory}","emoji":"📦","desc":"profitable","asin":"B0XXXX","aliexpress":"https://aliexpress.com/item/xxx","price":{"cost":8,"sell":28,"margin":71,"roi":250},"bsr":{"rank":6000,"category":"${cleanCategory}","monthlySales":450},"reviews":{"count":700,"rating":4.4},"suppliers":{"aliexpress":6.8,"alibaba":7.5},"profitability":{"breakeven":30,"monthly":1800,"yearly":21600}}]
+
+Return 8 products with AliExpress links.`;
 
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
@@ -77,80 +99,76 @@ Return 8 products with realistic data. If you can't find real products, generate
         messages: [
           {
             role: 'system',
-            content: 'You are a product database. Always return exactly 8 products in valid JSON format. Never return empty arrays. If you cannot find real products, generate realistic examples.'
+            content: 'You are a product sourcing expert. Always return 8 products with AliExpress supplier links and accurate profit calculations. Never return empty arrays.'
           },
           {
             role: 'user',
-            content: optimizedPrompt
+            content: enhancedPrompt
           }
         ],
-        temperature: 0.5, // Lower = more consistent
-        max_tokens: 3000,
-        top_p: 0.9
+        temperature: 0.4,
+        max_tokens: 3500
       })
     });
 
     const responseText = await response.text();
-    console.log('📊 Perplexity response time:', Date.now() - startTime, 'ms');
+    const apiTime = Date.now() - startTime;
+    console.log('📊 API response:', apiTime, 'ms');
 
     if (!response.ok) {
-      console.error('❌ Perplexity error:', responseText);
-      return NextResponse.json(
-        {
-          error: `Perplexity Error (${response.status})`,
-          details: responseText
-        },
-        { status: 500 }
-      );
+      console.error('❌ API error:', responseText);
+      const fallbackProducts = generateFallbackProducts(cleanCategory, searchQuery);
+      return NextResponse.json({
+        success: true,
+        data: fallbackProducts,
+        cached: false,
+        fallback: true,
+        responseTime: Date.now() - startTime
+      });
     }
 
     const data = JSON.parse(responseText);
     let content = data.choices[0]?.message?.content || '[]';
     
-    // Clean markdown
     content = content
       .replace(/```json\n?/g, '')
       .replace(/```\n?/g, '')
       .trim();
 
-    // Validate we got products
+    // Validate response
     try {
       const products = JSON.parse(content);
       if (!Array.isArray(products) || products.length === 0) {
-        console.error('❌ Empty array returned');
-        // Generate fallback products
-        content = generateFallbackProducts(category);
+        console.log('⚠️ Empty response, using fallback');
+        content = generateFallbackProducts(cleanCategory, searchQuery);
       }
     } catch (e) {
-      console.error('❌ Invalid JSON:', e.message);
-      content = generateFallbackProducts(category);
+      console.error('❌ JSON parse error:', e.message);
+      content = generateFallbackProducts(cleanCategory, searchQuery);
     }
 
-    // Cache the result
+    // Cache result
     if (db) {
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 24);
-
       try {
-        await db
-          .from('product_cache')
-          .insert({
-            cache_key: cacheKey,
-            search_query: searchQuery || 'default',
-            category: category || 'general',
-            products_data: content,
-            expires_at: expiresAt.toISOString(),
-            search_count: 1
-          });
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 24);
 
-        console.log('💾 Cached for 24h');
+        await db.from('product_cache').insert({
+          cache_key: cacheKey,
+          search_query: searchQuery || 'default',
+          category: cleanCategory,
+          products_data: content,
+          expires_at: expiresAt.toISOString(),
+          search_count: 1
+        });
+        console.log('💾 Cached');
       } catch (err) {
-        console.error('Cache insert error:', err);
+        console.error('Cache error:', err.message);
       }
     }
 
     const totalTime = Date.now() - startTime;
-    console.log('✅ Total time:', totalTime, 'ms');
+    console.log('✅ Total:', totalTime, 'ms');
 
     return NextResponse.json({
       success: true,
@@ -163,107 +181,69 @@ Return 8 products with realistic data. If you can't find real products, generate
   } catch (error) {
     console.error('❌ Exception:', error);
     return NextResponse.json(
-      {
-        error: error.message,
-        type: 'exception'
-      },
+      { error: error.message, type: 'exception' },
       { status: 500 }
     );
   }
 }
 
-// Fallback generator if API returns nothing
-function generateFallbackProducts(category) {
-  const categoryName = category?.replace(/[🔥🍳🏠🧹💄📱🐕💪👕👶🌱🎮🎧📷🏋️🎨📚🚗🎒]/g, '').trim() || 'General';
+function generateFallbackProducts(category, keyword) {
+  const searchTerm = keyword || category;
+  const basePrice = 15 + Math.random() * 20;
   
-  const templates = [
-    {
-      name: `Premium ${categoryName} Essential`,
-      desc: 'High-quality, popular choice',
-      emoji: '⭐'
-    },
-    {
-      name: `Professional ${categoryName} Tool`,
-      desc: 'Professional-grade product',
-      emoji: '🔧'
-    },
-    {
-      name: `Bestselling ${categoryName} Kit`,
-      desc: 'Complete starter kit',
-      emoji: '📦'
-    },
-    {
-      name: `Advanced ${categoryName} System`,
-      desc: 'Advanced features',
-      emoji: '🚀'
-    },
-    {
-      name: `Portable ${categoryName} Set`,
-      desc: 'Compact and portable',
-      emoji: '🎒'
-    },
-    {
-      name: `Deluxe ${categoryName} Bundle`,
-      desc: 'All-in-one solution',
-      emoji: '💎'
-    },
-    {
-      name: `Smart ${categoryName} Device`,
-      desc: 'Smart technology enabled',
-      emoji: '🤖'
-    },
-    {
-      name: `Eco-Friendly ${categoryName}`,
-      desc: 'Sustainable choice',
-      emoji: '🌿'
-    }
-  ];
+  const products = Array.from({ length: 8 }, (_, i) => {
+    const cost = (basePrice * 0.3) + (i * 0.5);
+    const sell = basePrice + (i * 2);
+    const margin = Math.round(((sell - cost) / sell) * 100);
+    const roi = Math.round(((sell - cost) / cost) * 100);
 
-  const products = templates.map((t, i) => ({
-    name: t.name,
-    category: categoryName,
-    emoji: t.emoji,
-    desc: t.desc,
-    asin: `B0${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-    price: {
-      cost: 8 + i * 2,
-      sell: 25 + i * 5,
-      margin: 65 + i * 2,
-      roi: 180 + i * 20
-    },
-    bsr: {
-      rank: 3000 + i * 500,
-      category: categoryName,
-      monthlySales: 600 - i * 50
-    },
-    reviews: {
-      count: 800 + i * 100,
-      rating: 4.2 + (i * 0.1)
-    },
-    competition: {
-      sellers: 40 + i * 5,
-      level: i < 3 ? 'Low' : i < 6 ? 'Medium' : 'High'
-    },
-    viral: {
-      score: 75 + i * 3,
-      platform: 'TikTok',
-      reason: 'Popular in this category',
-      views: `${2 + i}M`
-    },
-    trend: {
-      direction: i < 5 ? 'Rising' : 'Stable',
-      velocity: i < 3 ? 'Fast' : 'Medium'
-    },
-    suppliers: {
-      alibaba: 7.5 + i * 0.5,
-      cj: 8 + i * 0.5
-    },
-    profitability: {
-      breakeven: 35 + i * 5,
-      monthly: 2000 - i * 100,
-      yearly: 24000 - i * 1200
-    }
-  }));
+    return {
+      name: keyword ? `${keyword} ${['Set', 'Kit', 'Pack', 'Bundle', 'Pro', 'Premium', 'Deluxe', 'Essential'][i]}` : `${category} Product ${i + 1}`,
+      category: category,
+      emoji: '📦',
+      desc: keyword ? `Quality ${keyword} at competitive price` : 'Popular choice',
+      asin: `B0${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+      aliexpress: `https://aliexpress.com/item/${Math.floor(Math.random() * 1000000000)}.html`,
+      price: {
+        cost: Math.round(cost * 100) / 100,
+        sell: Math.round(sell * 100) / 100,
+        margin: margin,
+        roi: roi
+      },
+      bsr: {
+        rank: 5000 + (i * 1000),
+        category: category,
+        monthlySales: 500 - (i * 30)
+      },
+      reviews: {
+        count: 600 + (i * 100),
+        rating: 4.2 + (i * 0.05)
+      },
+      competition: {
+        sellers: 35 + (i * 5),
+        level: i < 3 ? 'Low' : i < 6 ? 'Medium' : 'High'
+      },
+      viral: {
+        score: 70 + (i * 2),
+        platform: 'TikTok',
+        reason: keyword ? `Popular ${keyword} choice` : 'Trending product',
+        views: `${1.5 + (i * 0.3)}M`
+      },
+      trend: {
+        direction: i < 5 ? 'Rising' : 'Stable',
+        velocity: i < 3 ? 'Fast' : 'Medium'
+      },
+      suppliers: {
+        aliexpress: Math.round(cost * 0.9 * 100) / 100,
+        alibaba: Math.round(cost * 0.85 * 100) / 100
+      },
+      profitability: {
+        breakeven: Math.round((cost * 1.5) * 100) / 100,
+        monthly: Math.round((sell - cost) * (500 - i * 30)),
+        yearly: Math.round((sell - cost) * (500 - i * 30) * 12)
+      }
+    };
+  });
 
   return JSON.stringify(products);
 }
