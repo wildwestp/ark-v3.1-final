@@ -1242,9 +1242,8 @@ export default function Home() {
         {/* SEARCH TAB */}
         {activeTab === 'search' && (
           <div>
-              </div>
-            </div>
-            <div className="flex gap-2">
+            {/* Action Buttons */}
+            <div className="flex gap-2 mb-6">
               <button
                 onClick={() => setShowDebug(!showDebug)}
                 className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition text-sm"
@@ -1264,11 +1263,7 @@ export default function Home() {
                 🔔 Alerts ({alerts.length})
               </button>
             </div>
-          </div>
-        </div>
-      </header>
 
-      <div className="container mx-auto px-4 py-8">
         {/* Search Section */}
         <div className="bg-gray-900 rounded-xl p-6 mb-8 shadow-2xl border border-gray-800">
           <h2 className="text-2xl font-bold mb-6 text-orange-400">🔍 Product Search</h2>
@@ -1820,6 +1815,9 @@ export default function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
           </div>
         )}
 
