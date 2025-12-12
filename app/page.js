@@ -1254,24 +1254,46 @@ export default function Home() {
           
           {/* Tabs */}
           <div className="flex gap-2">
-            {[
-              { id: 'search', icon: '🔍', label: 'Search' },
-              { id: 'saved', icon: '💾', label: `Saved (${savedProducts?.length || 0})` },
-              { id: 'bundles', icon: '📦', label: `Bundles (${bundles?.length || 0})` },
-              { id: 'competitors', icon: '👁️', label: `Watch (${competitors?.length || 0})` }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-2 rounded-lg font-semibold transition ${
-                  activeTab === tab.id
-                    ? 'bg-white text-orange-600'
-                    : 'bg-orange-700 text-white hover:bg-orange-600'
-                }`}
-              >
-                {tab.icon} {tab.label}
-              </button>
-            ))}
+            <button
+              onClick={() => setActiveTab('search')}
+              className={`px-6 py-2 rounded-lg font-semibold transition ${
+                activeTab === 'search'
+                  ? 'bg-white text-orange-600'
+                  : 'bg-orange-700 text-white hover:bg-orange-600'
+              }`}
+            >
+              🔍 Search
+            </button>
+            <button
+              onClick={() => setActiveTab('saved')}
+              className={`px-6 py-2 rounded-lg font-semibold transition ${
+                activeTab === 'saved'
+                  ? 'bg-white text-orange-600'
+                  : 'bg-orange-700 text-white hover:bg-orange-600'
+              }`}
+            >
+              💾 Saved ({savedProducts?.length || 0})
+            </button>
+            <button
+              onClick={() => setActiveTab('bundles')}
+              className={`px-6 py-2 rounded-lg font-semibold transition ${
+                activeTab === 'bundles'
+                  ? 'bg-white text-orange-600'
+                  : 'bg-orange-700 text-white hover:bg-orange-600'
+              }`}
+            >
+              📦 Bundles ({bundles?.length || 0})
+            </button>
+            <button
+              onClick={() => setActiveTab('competitors')}
+              className={`px-6 py-2 rounded-lg font-semibold transition ${
+                activeTab === 'competitors'
+                  ? 'bg-white text-orange-600'
+                  : 'bg-orange-700 text-white hover:bg-orange-600'
+              }`}
+            >
+              👁️ Watch ({competitors?.length || 0})
+            </button>
           </div>
         </div>
       </header>
